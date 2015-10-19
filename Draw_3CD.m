@@ -73,7 +73,7 @@ for n = 1 : size (stim(1,l).t,3)
         results.t = [];
         %    checks if the data imput contains a number or NaN
         if ~isnan(stim(1,l).t(m,1:3,n))
-            [~,~,results]=Modeling_DRG_TCM_Engine_v3(horzcat('DRG_TCM_Model_mh','_Report'),...
+            [~,~,results]=Modeling_DRG_TCM_Engine(horzcat('DRG_TCM_Model_mh','_Report'),...
                 stim(1,l).t(m,:,n),stim(1,l).amp(m,:,n),...
                 var,var_names,dt);
             
@@ -171,7 +171,7 @@ for l = 5%1:size(stimAmp,2)
     %   calls the fit and plots for each delay in the matrix
     opt = optimset('MaxFunEval',10000);
 %     ret = @(a,x)1./(1+exp((a(1)-x)/(a(2))));
-    ff = @Bolcman;
+    ff = @Boltzmann;
     hold on;
     for bb = 1 : size(yy,2);
         y = (yy(:,bb));

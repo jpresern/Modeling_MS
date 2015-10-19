@@ -29,7 +29,7 @@ delayy = [4.0, 20.0, 40.0, 100.0, 400.0, 1000.0];
 % xxx = linspace(1,1000,1000);
 %   enter the control peak values and computes Boltzmann fit over it
 opt = optimset('MaxFunEval',10000);
-ff = @Bolcman;
+ff = @Boltzmann;
 [par, ~, ~, ~]=fminsearch(ff,[5,0.5],opt,control_amps,...
                      control_pks/min(control_pks));
 x50_cont = par(1);
@@ -83,7 +83,7 @@ for l = 1 : size(stimulus,2)
             %    checks if stimulus is a number or NaN
             if ~isnan(stimulus(1,l).t(m,1:3,n)) 
                 %    calculates the model responses
-                g = Modeling_DRG_TCM_Engine_v3(model,stimulus(1,l).t(m,:,n),...
+                g = Modeling_DRG_TCM_Engine(model,stimulus(1,l).t(m,:,n),...
                                 stimulus(1,l).amp(m,:,n),varr,varr_names,dt);
 
             %   calculates index to grab peaks in the correct time window

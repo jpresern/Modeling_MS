@@ -28,11 +28,11 @@ peaksPredicted_Repoke = nan(size(ProtocolIndex));
             
 %%% Fitting the figure 2A - trapezoid stimuli in poke - repoke fashion
 
-for w14 = 1:length(ProtocolIndex14)    
-% parfor w14 = 1:length(ProtocolIndex)
+% for w14 = 1:length(ProtocolIndex)    
+parfor w14 = 1:length(ProtocolIndex)
 
     %%% computes the g elicited by stimulus
-    g = Modeling_DRG_TCM_Engine_v3(model,tT(w14,:),ampT(w14,:),...
+    g = Modeling_DRG_TCM_Engine(model,tT(w14,:),ampT(w14,:),...
         variables,variables_names,dt);
     %%% extracts the peaks
     peaksPredicted(w14) = min(g(1:825));  

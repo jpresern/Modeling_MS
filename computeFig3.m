@@ -42,11 +42,11 @@ for w = 1:length(ProtocolIndex)
 % parfor w = 1:length(ProtocolIndex)
 %     if strcmp(model,'DRG_TCM_Model_mh_Report')
     %%% computes the g elicited by stimulus and 
-% %         [g,res] = Modeling_DRG_TCM_Engine_v3(model,tT(w,:),ampT(w,:),...
+% %         [g,res] = Modeling_DRG_TCM_Engine(model,tT(w,:),ampT(w,:),...
 % %                         variables,variables_names,dt);
 %     else
         %%% computes only the g elicited by stimulus
-        g = Modeling_DRG_TCM_Engine_v3(model,tT(w,:),ampT(w,:),...
+        g = Modeling_DRG_TCM_Engine(model,tT(w,:),ampT(w,:),...
             variables,variables_names,dt);
 %     end;
     %%% extracts the peaks

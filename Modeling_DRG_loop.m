@@ -34,7 +34,7 @@ variableFitParams_LoLims = InitFitParamFile.variableFitParams_LoLims;
 variableFitParams_tol = InitFitParamFile.variableFitParams_tol;
 variableFitC_Weights = InitFitParamFile.variableFitC_Weights;
 
-% for i = 13
+
 for i = 1:size(variableFitParams,2)
    %    writes new values into appropriate variables
    ModelInput_FitVariables = variableFitParams (:,i)';
@@ -50,7 +50,7 @@ for i = 1:size(variableFitParams,2)
    InitFitParamFile.C_Weights = C_Weights;
    
    %    starts the model with new parameters
-   Modeling_DRG_v6(Project);
+   Modeling_DRG(Project);
    % pause;
 end
 

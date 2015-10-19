@@ -36,7 +36,7 @@ results = [];
 for a = 1 : size(stimTime,1)
     expAmp{a} = expAmp{a}';
     res = [];
-    [~,~,res]=Modeling_DRG_TCM_Engine_v3(horzcat('DRG_TCM_Model_mh','_Report'),...
+    [~,~,res]=Modeling_DRG_TCM_Engine(horzcat('DRG_TCM_Model_mh','_Report'),...
         stimTime(a,:),stimAmp(a,:),...
         var,var_names,dt);
    
@@ -111,8 +111,8 @@ hold on;
 
 set(gca,'XTick',stimAmp(:,2));
 
-%%% plot Bolcman first, so the data points are plotted *over* the lines.
-ff = @Bolcman;
+%%% plot Boltzmann first, so the data points are plotted *over* the lines.
+ff = @Boltzmann;
 [paramExp, ~, ~, ~]=fminsearch(ff,[5,0.5],[],output.stimulus.ampMax,...
     output.experiment.Imax'/min(output.experiment.Imax));
 fit = 1./(1+exp((paramExp(1)-xx)/paramExp(2)));

@@ -72,7 +72,7 @@ set(AX(2),'YTick',[0,0.25,0.5,0.75,1.0,1.25,1.5,1.75,2.0,2.5,3.0]);
 %   boltzmann fit of the Hao2010 2B data
 x2a = [0.1:0.1:9];
 hold on;
-ff = @Bolcman;
+ff = @Boltzmann;
 [paramInactExp, ~, ~, ~]=fminsearch(ff,[4.8,1.2],[],exp3IInactAdapt(:,1),exp3IInactAdapt(:,2));
 fit3IinactExp = 1./(1+exp((paramInactExp(1)-x2a)/paramInactExp(2)));
 plot(x2a, fit3IinactExp,'Color',cmap1(7,:),'LineWidth',2);
@@ -120,7 +120,7 @@ set(AX(2),'YTick',[0,0.25,0.5,0.75,1.0,1.25,1.5,1.75,2.0,2.5,3.0]);
 %   boltzmann fit of the Hao2010 2B data
 x2a = [0.1:0.1:9];
 hold on;
-ff = @Bolcman;
+ff = @Boltzmann;
 [paramInactExp, ~, ~, ~]=fminsearch(ff,[4.8,1.2],[],exp3IInactAdapt(:,1),exp3IInactAdapt(:,2))
 fit3IinactExp = 1./(1+exp((paramInactExp(1)-x2a)/paramInactExp(2)));
 plot(x2a, fit3IinactExp,'Color',cmap1(7,:),'LineWidth',2);
@@ -173,7 +173,7 @@ hold off;
 %   boltzmann fit of the Hao2010 2B data
 x2a = [0.1:0.1:9];
 hold on;
-ff = @Bolcman;
+ff = @Boltzmann;
 [paramInact, ~, ~, ~]=fminsearch(ff,[4.8,1.2],[],conAmp(1:size(ratio,1)),ratio)
 fit3Iinact = 1./(1+exp((paramInact(1)-x2a)/paramInact(2)));
 plot(x2a, fit3Iinact,'b','LineWidth',2);

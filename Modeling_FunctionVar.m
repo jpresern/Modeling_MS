@@ -1,4 +1,4 @@
-%%% Written by Aleš Škorjanc at some point in 2011
+%%% Written by AleS Skorjanc at some point in 2011
 
 function FunVar = Modeling_FunctionVar(x,y)
 

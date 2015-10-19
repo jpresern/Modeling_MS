@@ -37,7 +37,7 @@ for ww = 1:length(ProtocolIndex)
 % parfor ww = 1:length(ProtocolIndex)
     
     %%% computes the g elicited by stimulus
-    g = Modeling_DRG_TCM_Engine_v3(model,tT(ww,:),ampT(ww,:),...
+    g = Modeling_DRG_TCM_Engine(model,tT(ww,:),ampT(ww,:),...
         variables,variables_names,dt);
     %%% extract the peaks
     peakRecovery(ww) = min(g(864:end))/min(g(1:864)); % selecting the part of the modeled 

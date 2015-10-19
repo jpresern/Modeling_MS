@@ -1,8 +1,9 @@
+
+
 function [f, output] = Draw_2A(dt, stimAmp, stimTime,...
                             Imax,Diagram_y,...
                             var, var_names,...
                             cmap1, cmap2, fn)
-
 
 f = figure;
 
@@ -38,7 +39,7 @@ hold on;
 for a = 1 : size(stimTime,1)
     results.t = [];
     results.g = [];
-    [~,~,results]=Modeling_DRG_TCM_Engine_v3(horzcat('DRG_TCM_Model_mh','_Report'),...
+    [~,~,results]=Modeling_DRG_TCM_Engine(horzcat('DRG_TCM_Model_mh','_Report'),...
         stimTime(a,:),stimAmp(a,:),...
         var,var_names,dt);
     
@@ -48,7 +49,6 @@ for a = 1 : size(stimTime,1)
     output.model.I(a)={results.g};
    
     %   harvesting the peak values
-    
     firstPeak = int64(sum(stimTime(a,1:3))/dt);
     secondPeak = int64(sum(stimTime(a,1:4))/dt);
 
@@ -76,7 +76,7 @@ s(3) = axes ('OuterPosition', [0 0 1 0.3]);
 x2a = [0.1:0.1:9];
 fig2Boff = Diagram_y - min(Diagram_y);
 fig2Bnorm = fig2Boff./max(fig2Boff);
-ff = @Bolcman;
+ff = @Boltzmann;
 % [param, ~, ~, ~]=fminsearch(ff,[3.6,-2],[],output.stimulus.defAmp,output.model.peakRePoke./min(output.model.peakRePoke));
 [paramExp, ~, ~, ~]=fminsearch(ff,[4.8,-1.2],[],output.stimulus.defAmp,fig2Bnorm);
 fit2B = 1./(1+exp((paramExp(1)-x2a)/paramExp(2)))+min(Diagram_y)./max(Diagram_y);

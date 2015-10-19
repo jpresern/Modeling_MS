@@ -40,7 +40,7 @@ for aa = 1:size(stimAmp,2)
     %   calls the fit and plots for each delay in the matrix
     opt = optimset('MaxFunEval',10000);
 
-    ff = @Bolcman;
+    ff = @Boltzmann;
     hold on;
     for bb = 1 : size(yy,2);
         y = (yy(:,bb));
