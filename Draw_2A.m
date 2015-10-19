@@ -1,4 +1,20 @@
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Ales Skorjanc, Janez Presern, 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Function requires:
+%       dt..                sampling rate
+%       stimamp..           stimulus description (amplitudes changes)
+%       stimTime..          stimulus description (time durations of amplitude changes
+%       Imax..              vector of maximum 
+%       cost14.....        cost functions
+%       variables  ..     variable values as inserted by fminsearch
+%       variables_names ..names of variables
+%       peaksMeasured_recovery .. experimentally measured recovery peaks
+%       cw1...cw2..       cost weights
+%       wFig2   ..        point weights
+%   Function outputs:
+%       outputs.Fig6.model.peakRecovery..  maximum current g at various stimuli amplitudes
+%       outputs.c1,              ...       computed costs
 
 function [f, output] = Draw_2A(dt, stimAmp, stimTime,...
                             Imax,Diagram_y,...
@@ -123,14 +139,11 @@ text(6,0.2,['mod x_{50} = ', num2str(paramMod(1)),...
     ' mod k = ', num2str(paramMod(2))],...
         'HorizontalAlignment','left','VerticalAlignment','top','Color',cmap1(2,:));
 
-
-
 set(gca,'XTick',output.stimulus.defAmp);
 hold off;
 ylabel('I/I_{max}');
 xlabel('Conditioning stimulus [\mum]');
 grid on;
-
 
 ylim([0 1.01]);
 legend ([p1_2B, p3_2B, p2_2B,p4_2B,p5_2B,p6_2B],'cond. peak current model', 'cond. peak current experiment',...

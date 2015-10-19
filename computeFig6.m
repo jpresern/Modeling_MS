@@ -1,6 +1,6 @@
-%%%%%
-%   Janez Pre?ern, 2014
-%   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Ales Skorjanc, Janez Presern, 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Function requires:
 %       model   ..        model type
 %       tT      ..        stimulus time
@@ -30,11 +30,9 @@ r3 = zeros(1, length(ProtocolIndex));
 c1 = 0;
 c2 = 0;
 
-
-
 %%% Fitting the figure 6 - trapezoid stimuli with recovery
-for ww = 1:length(ProtocolIndex)            
-% parfor ww = 1:length(ProtocolIndex)
+% for ww = 1:length(ProtocolIndex)            
+parfor ww = 1:length(ProtocolIndex)
     
     %%% computes the g elicited by stimulus
     g = Modeling_DRG_TCM_Engine(model,tT(ww,:),ampT(ww,:),...

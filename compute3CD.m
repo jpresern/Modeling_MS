@@ -1,6 +1,6 @@
-%%%%%
-%   Janez Presern, 2014
-%   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Ales Skorjanc, Janez Presern, 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
 %   Function requires:
 %       model   ..        model type
 %       stimulus      ..  stimulus - structure containing 3D matrix with 
@@ -18,7 +18,6 @@
 
 function out = compute3CD (model,stimulus,...
                                 varr,varr_names,dt)
-
                             
 %   prepare empty array for the stimulus
 stimAmp = nan(size(stimulus(1,1).t,1),size(stimulus,2));
@@ -39,8 +38,8 @@ peakInitial = NaN(size(stimulus(1,1).t,1),size(stimulus(1,1).t,3),size(stimulus,
 peakRecovery = peakInitial;
 
 %%%%%% Conditioning stimulus loop
-for l = 1 : size(stimulus,2)
-% parfor l = 1 : size(stimulus,2)
+% for l = 1 : size(stimulus,2)
+parfor l = 1 : size(stimulus,2)
 %   It turned out to be very efficient to have the parfor loop as the
 %   outernmost for loop. The calculation time was cut down from 300-500 s
 %   to ~ 150 s including opening the matlab pool (10 s) and closing it (5
@@ -51,32 +50,21 @@ for l = 1 : size(stimulus,2)
     %   parfor: prepare dummy variables for index ix1 & ix2
     dummy3=nan(size(stimulus(1,l).t,1),size(stimulus(1,l).t,3));
     condResp = [];
-%     opt = optimset('MaxFunEval',10000);
-%     ret = @(a,x)1./(1+exp((a(1)-x)/(a(2))));
-%    l
     
     %%%%%% Delay loop
     for n = 1 : size (stimulus(1,l).t,3) 
 %         n
         %%%%%% Amplitude loop, starts at value l to skip the rows with NaN    
         for m = l : size(stimulus(1,l).t,1)  
-%             m
             %   clears the variables, makes sure no artefacts are drawn (or
             %   extracted)            
             ix2 = [];
             pks = [];
             %    checks if stimulus is a number or NaN
             if ~isnan(stimulus(1,l).t(m,1:3,n)) 
-                %    calculates the model responses
-%                 if strcmp(model,'DRG_TCM_Model_mh_Report')
-%                    [g, ~, res]  = Modeling_DRG_TCM_Engine_v3(model,stimulus(1,l).t(m,:,n),...
-%                                 stimulus(1,l).amp(m,:,n),varr,varr_names,dt); 
-%                 else
-                   g = Modeling_DRG_TCM_Engine(model,stimulus(1,l).t(m,:,n),...
-                                stimulus(1,l).amp(m,:,n),varr,varr_names,dt);
-%                 end
-
-            %   calculates index to grab peaks in the correct time window
+               g = Modeling_DRG_TCM_Engine(model,stimulus(1,l).t(m,:,n),...
+                            stimulus(1,l).amp(m,:,n),varr,varr_names,dt);
+                %   calculates index to grab peaks in the correct time window
                 %   stores the current computed in the response to the
                 %   conditioning stimuli, storing only max. delay current to ensure the
                 %   proper length of the vector for further computation;
@@ -86,8 +74,8 @@ for l = 1 : size(stimulus,2)
                     condResp = g;
                     [dummy1(m,n), dummy3(m,n)] = min(condResp);
 
-                    %%% problem with no peaks at the 0 stimuli
-%                     if dummy3(m,n) == length(condResp)
+                    %   problem with no peaks at the 0 stimuli
+                    %   if dummy3(m,n) == length(condResp)
                     if dummy3(m,n) >= int64(sum(stimulus(1,l).t(m,1:3,n))/dt);
                         dummy3(m,n) = int64(sum(stimulus(1,l).t(m,1:3,n))/dt);
                     end;
@@ -107,15 +95,8 @@ for l = 1 : size(stimulus,2)
             dummy2(m,n) = 0;
             %   subtracting the value of the conditioning response (offset)
             if ~isempty(pks)
-%                 dummy2(m,n) = -pks-condResp(ix2+dummy3(m,n));
                 dummy2(m,n) = -pks-condResp(ix2);
             end;
-% %         hold on;
-%         plot(g);
-%         hold on;
-%         plot(ix2,-pks,'*r');
-%         plot(dummy3(m,n),dummy1(m,n),'xb');
-%         hold off;
         end;
     end;
     peakInitial(:,:,l) = dummy1;
@@ -126,5 +107,4 @@ out.model.peakInitial = peakInitial;
 out.model.peakRecovery = peakRecovery;
 out.model.stimAmp = stimAmp;
 
-                            
 end

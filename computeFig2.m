@@ -1,6 +1,6 @@
-%%%%%
-%   Janez Pre?ern, 2014
-%   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Ales Skorjanc, Janez Presern, 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Function requires:
 %       model   ..        model type
 %       tT      ..        stimulus time
@@ -24,7 +24,7 @@ function [out,varargout] = computeFig2 (model,tT,ampT,ProtocolIndex,...
 
 %   Preparing variables for parfor loop (slicing et al.)
 peaksPredicted = nan(size(ProtocolIndex));
-peaksPredicted_Repoke = nan(size(ProtocolIndex));
+peaksPredicted_rePoke = nan(size(ProtocolIndex));
             
 %%% Fitting the figure 2A - trapezoid stimuli in poke - repoke fashion
 
@@ -47,7 +47,6 @@ peaksRepoke = peaksPredicted_rePoke./min(peaksPredicted_rePoke);
 c1 = sum((wFig2(ProtocolIndex)/length(wFig2(ProtocolIndex))).*...% preparing the weights for the estimator C2
     (peaksRepoke - peaksMeasured_rePoke(ProtocolIndex)).^2)./...                           % subtracting modeled and recorded peaks
     abs((mean(peaksMeasured_rePoke(ProtocolIndex)))*length(peaksPredicted));                                 % ?normalizing?
-
 
 %%%%%  output section
 cost = c1;

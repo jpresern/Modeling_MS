@@ -1,6 +1,6 @@
-%%%%%
-%   Janez Presern, 2014
-%   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Ales Skorjanc, Janez Presern, 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Function requires:
 %       model   ..        model type
 %       tT      ..        stimulus time
@@ -38,17 +38,11 @@ c5 = 0;
 
 %   loop computing model response to stimuli, extracting the features and
 %   comparing them to the recordings
-for w = 1:length(ProtocolIndex)
-% parfor w = 1:length(ProtocolIndex)
-%     if strcmp(model,'DRG_TCM_Model_mh_Report')
-    %%% computes the g elicited by stimulus and 
-% %         [g,res] = Modeling_DRG_TCM_Engine(model,tT(w,:),ampT(w,:),...
-% %                         variables,variables_names,dt);
-%     else
-        %%% computes only the g elicited by stimulus
-        g = Modeling_DRG_TCM_Engine(model,tT(w,:),ampT(w,:),...
-            variables,variables_names,dt);
-%     end;
+% for w = 1:length(ProtocolIndex)
+parfor w = 1:length(ProtocolIndex)
+    
+    g = Modeling_DRG_TCM_Engine(model,tT(w,:),ampT(w,:),...
+        variables,variables_names,dt);
     %%% extracts the peaks
     iMax(w) = min(g(1,250:end)); % not from teh begining to avoid bumps
     
