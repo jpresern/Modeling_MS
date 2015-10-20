@@ -21,17 +21,17 @@ function [fig, output] = Draw_3A(dt, stimAmp, stimTime, expAmp, expTime, var,...
                             weights, recWeights, cmap1, cmap2, fn)
 
 
-% figNum = 1;
 fig = figure;
+
+%%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the stimulus %%%%%%%%%%%%%%%%%%%%%%
 s(1) = axes('OuterPosition', [0 0.8 1 0.2]);  
 set(gca,'XTickLabel',[]);
-% set(0,'defaultAxesFontName', 'Arial')
-% set(0,'defaultTextFontName', 'Arial')
+
 
 [x,y] = Modeling_GenerateStimulus([0:dt:max(sum(stimTime,2))],...
     stimTime,stimAmp);
 
-hold on;%     ExpData.Fig3A_Recording.ampsmooth{1,a} = [komponenta1', ExpData.Fig3A_Recording.ampi{a}(262:720)', komponenta2'];
+hold on;
 for i = 1: size (x,1);
     plot(x(i,:)',y(i,:)','Color',cmap2(i,:),'LineWidth',2);
 end;
@@ -52,7 +52,7 @@ s(2) = axes('OuterPosition', [0 0.4 1 0.4]);
 hold on;
 results = [];
 for a = 1 : size(stimTime,1)
-    expAmp{a} = expAmp{a}';
+%     expAmp{a} = expAmp{a}';
     res = [];
     [~,~,res]=Modeling_DRG_TCM_Engine(horzcat('DRG_TCM_Model_mh','_Report'),...
         stimTime(a,:),stimAmp(a,:),...
@@ -72,13 +72,7 @@ for a = 1 : size(stimTime,1)
     output.experiment.I(a)={expAmp(a)};
     output.experiment.Imax(a) = min(expAmp{a}(250:end));
     results{a} = res;
-% pause;
 end;
-output.results = results;
-hold off;
-
-hold on;
-
 text(50,-0.15,var_names,'HorizontalAlignment','left','VerticalAlignment','top');
 text(60,-0.15,num2str(varInitial'),...
         'HorizontalAlignment','left','VerticalAlignment','top');
@@ -97,22 +91,26 @@ grid on;
 
 legend([p1,p2],'model','experiment','Location','southeast');
 
-%%%% fit and measure tau rise and tau decay
+output.results = results;
+
+%%%%%%%%%%%%%%%%%%%% Calculate and draw tau decay model and tau decay experiment
 opt = optimset('MaxFunEval',10000);
 
-[tauMod,~,~,~] = fminsearch(@expDec,3,opt,expTime{13}(1,1:end-(30+ixFig3Exp(a))),-expAmp{13}(1,1+30+ixFig3Exp(a):end));
-fitExp = (1-exp(-expTime{13}(1,1:end-(30+ixFig3Exp(a)))./tauMod))-1;
+%   the Experiment
+[tauExp,~,~,~] = fminsearch(@expDec,3,opt,expTime{13}(1,1:end-(30+ixFig3Exp(a))),-expAmp{13}(1,1+30+ixFig3Exp(a):end));
+fitExp = (1-exp(-expTime{13}(1,1:end-(30+ixFig3Exp(a)))./tauExp))-1;
 hold on;
 p7 = plot(expTime{13}(1,1+30+ixFig3Exp(a):end), fitExp,'Color',cmap1(14,:),'LineWidth',1.5);
 hold off;
-text(25,-0.9,horzcat('\tau_{fall} = ',num2str(tauMod)),'Color',cmap1(14,:));
+text(25,-0.9,horzcat('\tau_{fall} = ',num2str(tauExp)),'Color',cmap1(14,:));
 
-[tauExp,~,~,~] = fminsearch(@expDec,3,opt,res.t(1,1:end-(280+ixFig3)),-res.g(1,1+280+ixFig3:end));
-fitMod = (1-exp(-res.t(1,1:end-(280+ixFig3))./tauExp))-1;
+%   the Model
+[tauMod,~,~,~] = fminsearch(@expDec,3,opt,res.t(1,1:end-(280+ixFig3)),-res.g(1,1+280+ixFig3:end));
+fitMod = (1-exp(-res.t(1,1:end-(280+ixFig3))./tauMod))-1;
 hold on;
 p8 = plot(res.t(1,1+280+ixFig3:end), fitMod,'r-','LineWidth',1.5);
 hold off;
-text(25,-0.7,horzcat('\tau_{fall} = ',num2str(tauExp)),'Color','r');
+text(25,-0.7,horzcat('\tau_{fall} = ',num2str(tauMod)),'Color','r');
 
 grid on;
 xlabel('time [ms]');
@@ -121,7 +119,7 @@ ylabel('Stim_{50} (\mum)');
 output.model.tau = tauMod;
 output.experiment.tau = tauExp;
 
-%%%%%%%%%%%%%%%%%%%% plot the intensity response curves 
+%%%%%%%%%%%%%%%%%%%% Calculate and draw the intensity response curves 
 xx = linspace(0,9,100);
 
 s(3) = axes ('OuterPosition', [0 0 1 0.3]);
@@ -129,8 +127,10 @@ hold on;
 
 set(gca,'XTick',stimAmp(:,2));
 
-%%% plot Boltzmann first, so the data points are plotted *over* the lines.
+% plot Boltzmann first, so the data points are plotted *over* the lines.
 ff = @Boltzmann;
+
+%   the Experiment
 [paramExp, ~, ~, ~]=fminsearch(ff,[5,0.5],[],output.stimulus.ampMax,...
     output.experiment.Imax'/min(output.experiment.Imax));
 fit = 1./(1+exp((paramExp(1)-xx)/paramExp(2)));
@@ -138,6 +138,7 @@ p5 = plot (xx,fit,'LineWidth',2,'Color',cmap1(7,:));
 plot(paramExp(1),0.5,'*','MarkerSize',10,'MarkerEdgeColor',cmap1(14,:));
 line([paramExp(1) paramExp(1)],[0 0.5],'LineStyle','--','Color',cmap1(14,:));
 
+%   the Model
 [paramMod, ~, ~, ~]=fminsearch(ff,[5,0.5],[],output.stimulus.ampMax,...
     output.model.Imax'/min(output.model.Imax));
 fit = 1./(1+exp((paramMod(1)-xx)/paramMod(2)));
@@ -171,5 +172,3 @@ grid on;
 legend ([p3, p4, p5, p6], 'experiment peak current','model peak current',...
     'Boltzmann fit of experiment','Boltzmann fit of the model','Location','northwest');
 
-
-% ss{length(f)} = s; s = [];
