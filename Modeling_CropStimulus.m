@@ -1,3 +1,8 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 function output = Modeling_CropStimulus(stim_t,stim_amp,TimeSpan)
 
 % Function crops the ramp stimulus. Stimulus is defined by the vector of 

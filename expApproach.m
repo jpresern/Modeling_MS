@@ -1,7 +1,7 @@
-%   Exponential approach
-%   Janez Prešern, maj 2014
-
-%%  Fitting the exponential approach
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%  Fitting the exponential approach
 
 function ret=expApproach(tau,t,y)
     yy = 1-exp(-t./tau);

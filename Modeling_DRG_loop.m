@@ -1,16 +1,19 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
 function Modeling_DRG_loop(Project_in)
 
 
 global Project; 
 Project = Project_in;
-%Project = 'DRG_TCM';
 global inputDir; inputDir = cd;
 
 %   Loading input parameters and experimental data into the function 
 %   Function executes loop in which it changes the starting parameters to
 %   new settings. Suitable for overnight runs.
 
-%   There are five adjustable parameters.
+%   There are five adjustable parameters, found in InitialFitParameters
 %   C_Weights      ...  which comparisons should be done and how weighted
 %                       they are
 %   FitVariables   ...  starting values of the fitted variables

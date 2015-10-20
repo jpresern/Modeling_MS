@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   Ales Skorjanc, Janez Presern, 2011-2015
+%   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Function requires:
 %       model   ..        model type
@@ -13,7 +13,21 @@
 %       wFig2   ..        point weights
 %   Function outputs:
 %       outputs.Fig6.model.peakRecovery..  maximum current g at various stimuli amplitudes
-%       outputs.c1,              ...       computed costs ...
+
+%       cost          ... computed costs
+%       out.Fig3A.iMax ...control peak currents
+%       out.peakInitial...peak elicited by conditioning
+%       out.peakRecovery..peak elicited by test
+%       out.x50..         adaptation shift midpoints (Boltzmann)
+%       out.k50..         adaptation shift slopes (Boltzmann)
+%       out.x50_cont..    control I-R midpoint
+%       out.k50_cont..    control I-R slope
+%       out.tauAct...     computed tau of adaptation
+%       out.tauInact..    computed tau of inactivation
+%       out.fittRange..   adaptive shift
+%       out.chanAvailability..channel availability
+%       out.respReduction.reduction of the response
+
 
 
 function [out, varargout] = compute3GHI (model,stimulus,...

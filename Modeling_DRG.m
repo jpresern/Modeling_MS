@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   Ales Skorjanc, Janez Presern, 2011-2015
+%   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Function fits HH equations on mechanically activated currents in
@@ -8,10 +8,12 @@
 
 % 1.One starts the function with entering "Modeling_DRG('DRG')" at the command window
 %   workspace MUST be set to folder containing Modeling_DRG.m
-% 1.Folder containing script should contain subfolder (in this example case
-% 'DRG') in which the two files reside (see example):
+% 1.Folder containing script must contain experimental subfolder (in this 
+%   example case 'DRG') in which the two files reside (see example):
 %       -file with start-up parameters
 %       -file with the initial fit parameters
+% 2.The experimental subfolder must also contain folder 'Results' in which
+%   the program dumps the results, figures etc....
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 
@@ -105,13 +107,13 @@ ff = @ChiSquare;                                % Assigns the handle of fitting 
 %%%% global search "simulannealbnd" requires options provided by "saoptimset"
 %%%% provided by "saoptimset".
 
-% [xout,fval] = fminsearch(ff,fit_var,opt);
+[xout,fval] = fminsearch(ff,fit_var,opt);
 % [xout, fval] = fminunc(ff,fit_var,opt);
 % [xout,fval] = patternsearch(ff,fit_var);
 % [xout,fval] = ga(ff,length(fit_var));
-options = saoptimset('ObjectiveLimit',0.002);   % Sets objective limit (whatever that is)
-[xout,fval] = simulannealbnd(ff,fit_var,...     % Runs the fitting  - search for *global* maximum
-    zeros(length(fit_var),1),inf(length(fit_var),1),options);
+% options = saoptimset('ObjectiveLimit',0.002);   % Sets objective limit (whatever that is)
+% [xout,fval] = simulannealbnd(ff,fit_var,...     % Runs the fitting  - search for *global* maximum
+%     zeros(length(fit_var),1),inf(length(fit_var),1),options);
 
 tiktak = toc
 
@@ -174,9 +176,9 @@ save(filename(inputDir,{inputDir,Project,'Results'},[Project,'_Results_',num2str
 %%% Following lines copy the used .m scripts into the same directory as
 %%% the results. This ensures reproducibility of the results.
 
-copyfile(filename(inputDir,{inputDir},'Modeling_DRG_v6.m'),...
+copyfile(filename(inputDir,{inputDir},'Modeling_DRG.m'),...
     filename(inputDir,{inputDir,Project,'Results'},[Project,'_Function_',num2str(MaxInd+1),'.m']),'f');
-copyfile(filename(inputDir,{inputDir},'Modeling_DRG_TCM_Engine_v3.m'),...
+copyfile(filename(inputDir,{inputDir},'Modeling_DRG_TCM_Engine.m'),...
     filename(inputDir,{inputDir,Project,'Results'},[Project,'_Model_',num2str(MaxInd+1),'.m']),'f');
 
 copyfile(filename(inputDir,{inputDir,Project},horzcat(Project,'_InitialFitParameters.mat')),...

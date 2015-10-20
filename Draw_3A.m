@@ -1,3 +1,21 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Function requires:
+%       dt..                sampling rate
+%       stimamp..           stimulus description (amplitudes changes)
+%       stimTime..          stimulus description (time durations of amplitude changes
+%       Imax..              vector of maximum 
+%       cost14.....        cost functions
+%       variables  ..     variable values as inserted by fminsearch
+%       variables_names ..names of variables
+%       peaksMeasured_recovery .. experimentally measured recovery peaks
+%       cw1...cw2..       cost weights
+%       wFig2   ..        point weights
+%   Function outputs:
+%       outputs.Fig2.model.peakRecovery..  maximum current g at various stimuli amplitudes
+%       outputs.c1,              ...       computed costs
+
 function [fig, output] = Draw_3A(dt, stimAmp, stimTime, expAmp, expTime, var,...
                             varInitial, varLimits, var_names,...
                             weights, recWeights, cmap1, cmap2, fn)

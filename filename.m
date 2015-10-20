@@ -1,6 +1,6 @@
-%%%%%%%%%%%
-%   Janez Prešern, 2014
-%   
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Function allows loading/saving .mat & .other files independent of the
 %   OS
 %   It checks inputDir variable for the (back)slashes concatenetes the

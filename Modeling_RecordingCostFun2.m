@@ -1,8 +1,6 @@
-%%% Written by Aleš Škorjanc, at some point after 2011
-
-%%% Adopted & adapted by Janez Prešern, 2014
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function output = Modeling_RecordingCostFun2(rec_t,rec_amp,CostFunInterv,CostFun_Value,dt)
 
 

@@ -1,6 +1,9 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+
 function output = Modeling_CropRecording(rec_ti,rec_ampi,dt,stim_t,RecShift)
-
-
 
 for dr = 1:length(rec_ti);
     if isnan(rec_ti{dr}) == 0 % ignore, if only NaNs

@@ -1,5 +1,6 @@
-%%% Written by Aleš Škorjanc at some point in 2011
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function r2 = Modeling_ParameterLimits(param,lim1,lim2,tol)
 
 if param > lim1 & param < lim2

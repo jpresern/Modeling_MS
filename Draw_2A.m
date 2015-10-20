@@ -1,5 +1,5 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   Ales Skorjanc, Janez Presern, 2011-2015
+%   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Function requires:
 %       dt..                sampling rate
@@ -13,7 +13,7 @@
 %       cw1...cw2..       cost weights
 %       wFig2   ..        point weights
 %   Function outputs:
-%       outputs.Fig6.model.peakRecovery..  maximum current g at various stimuli amplitudes
+%       outputs.Fig2.model.peakRecovery..  maximum current g at various stimuli amplitudes
 %       outputs.c1,              ...       computed costs
 
 function [f, output] = Draw_2A(dt, stimAmp, stimTime,...

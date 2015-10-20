@@ -1,7 +1,6 @@
-%%% Written by Aleš Škorjanc at some point in 2011
-
-%%% Adapted and accelerated by Janez Prešern, 2014
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function [stim_t,stim_amp] = Modeling_GenerateStimulus(t,StimInterval,StimAmplitude)
 
 stim_amp = NaN(size(StimInterval,1),length(t));

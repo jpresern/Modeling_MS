@@ -1,13 +1,13 @@
-function [g,varargout]=Modeling_DRG_TCM_Engine(ModelName,time,amplitude,variables,variables_names,dt)
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %................DRG_TransducerCurrentModel.............................
 %
 % This function simulates transduction currents of DRG neurons.
 % Models are based on the paper Hao and Delmas 2010.
 %
 %
-%.................Ales Skorjanc, 31.5.2011.....................
+%
 %
 %
 % The model is a phenomenological description of the DRG receptor
@@ -16,17 +16,6 @@ function [g,varargout]=Modeling_DRG_TCM_Engine(ModelName,time,amplitude,variable
 % to the conductance of the transduction channels at that potential, therefore
 % we use conductance instead of currents in the model (g=I/E).
 %
-%...............Janez Pre?ern, 15.4.2014...........................
-% a little more of adaptations and modifications, this time for DRG_TCM
-% fitting
-
-
-%%...............Janez Pre?ern, 11.8.2014..............................
-%   -v2:    the whole stimulus calculated in advance, not by a
-%           point-by-point loop as before for each cycle of current 
-%           computation. Oh, yes! This was a good improvement.
-%   -v3:    prealocating space for g, m & n
-%           replacing strmatch(outdated) with strcmp et al.
 
 
 
@@ -44,6 +33,10 @@ function [g,varargout]=Modeling_DRG_TCM_Engine(ModelName,time,amplitude,variable
 % variables_names... names of variables used by the model
 % dt... integration step
 
+
+
+
+function [g,varargout]=Modeling_DRG_TCM_Engine(ModelName,time,amplitude,variables,variables_names,dt)
 
 
 
@@ -88,8 +81,6 @@ if strfind(ModelName,'_Report')    %%% If "_Report" is found in model name, do w
     if isempty(Xm) == 0; out.parameters = vertcat(out.parameters,{horzcat('Xm = ',num2str(Xm))}); end;
     if isempty(N) == 0; out.parameters = vertcat(out.parameters,{horzcat('N = ',num2str(N))}); end;
     if isempty(M) == 0; out.parameters = vertcat(out.parameters,{horzcat('M = ',num2str(M))}); end;
-%     if isempty(P) == 0; out.parameters = vertcat(out.parameters,{horzcat('P = ',num2str(P))}); end;
-%     if isempty(R) == 0; out.parameters = vertcat(out.parameters,{horzcat('R = ',num2str(R))}); end;
     if isempty(Am) == 0; out.parameters = vertcat(out.parameters,{horzcat('Am = ',num2str(Am))}); end;
     if isempty(Ah) == 0; out.parameters = vertcat(out.parameters,{horzcat('Ah = ',num2str(Ah))}); end;
 end;
@@ -100,8 +91,6 @@ end;
 % curves...data for m_inf, a_inf and h_inf obtained from Hao2010 with digitize2
 
 t = 0:dt:sum(time);     % integration time interval computed from sum of the phase durations
-% t = dt:dt:sum(time);     % integration time interval computed from sum of the phase durations
-
 g = NaN(1,length(t));   % preparing the empty variable for computed current
 m = NaN(1,length(t));   % preparing the empty variable for computed activation
 h = NaN(1,length(t));   % preparing the empty variable for computed inactivation
@@ -188,9 +177,6 @@ if strcmp(ModelName,'DRG_TCM_Model_mh_Report') % used for report
     [x,y] = fplot(Predicted_h0,[0,10]);
     results.Predicted_h0.x = x; results.Predicted_h0.y = y.^M;
     
-%     m = NaN(1,length(t));
-%     h = NaN(1,length(t));
-%     stim = NaN(1,length(t));
     results.t = t;
         
     for c = 1:length(t);

@@ -1,8 +1,6 @@
-%%%%
-%%% Written by Aleš Škorjanc, sometime in 2011
-%%% Adopted & adapted by Janez Prešern, june 2014
-
-
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 function output=Modeling_GetVariables(Project,ModelName,varargin)
 
 

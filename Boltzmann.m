@@ -1,7 +1,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   Ales Skorjanc, Janez Presern, 2011-2015
+%   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   Boltzmann equation is written as in Hao2010
+%   Boltzmann equation used for fitting is written as in Hao2010
 
 %   use this if you are using fminsearch
 function ret=Boltzmann(a,x,y)

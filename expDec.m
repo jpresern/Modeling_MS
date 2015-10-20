@@ -1,7 +1,8 @@
-%   Exponential decay
-%   Janez Prešern, maj 2014
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%%  Fitting the exponential approach
+%  Fitting the exponential approach
 
 function ret=expDec(tau,t,y)
     yy = exp(-t./tau(1));
