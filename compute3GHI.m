@@ -1,19 +1,26 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Function computes the effect of conditioning adaptation strength,
+%   inactivation and time constants of inactivation and adaptation. The
+%   obtained calculation are then compared to the published results (Hao
+%   2010, Fig 3).
 %   Function requires:
 %       model   ..        model type
 %       stimulus      ..  stimulus - structure containing 3D matrix with 
 %                           stim times & stimulus amplitudes
-%       variables  ..     variable values as inserted by fminsearch
-%       variables_names ..names of variables
+%       varr        ..     variable values as inserted by fminsearch
+%       varr_names      ..names of variables
 %       control_amps ...  amplitude from control stimulus ExpData.Fig3A....
 %       control_pks ..    peaks from the ExpData.Fig3A.modeled.iMax
-%       cw1...cw2..       cost weights
-%       wFig2   ..        point weights
-%   Function outputs:
-%       outputs.Fig6.model.peakRecovery..  maximum current g at various stimuli amplitudes
+%       tauFig3GH   ..    taus from Hao 3GH imported from experimental data
+%       Fig3I       ..    contributions of adaptation and activation (Hao
+%                           fig 3I)
+%       cw1, cw2, cw3 ..  cost weights for each of the three modeled
+%                         experiments (Hao Fig 3: GH, I inact and I adapt)
+%       Fig3I_PW ..       point weights for fitting the figure (Hao 3I)
 
+%   Function outputs:
 %       cost          ... computed costs
 %       out.Fig3A.iMax ...control peak currents
 %       out.peakInitial...peak elicited by conditioning
@@ -29,17 +36,16 @@
 %       out.respReduction.reduction of the response
 
 
-
 function [out, varargout] = compute3GHI (model,stimulus,...
                                 varr,varr_names,dt,...
                                 control_pks,control_amps,...
                                 tauFig3GH, Fig3I,...
                                 cw1,cw2,cw3,Fig3I_PW)
                             
-%   some definition
+%   some definitions
 delayy = [4.0, 20.0, 40.0, 100.0, 400.0, 1000.0];
-% xxx = linspace(1,1000,1000);
-%   enter the control peak values and computes Boltzmann fit over it
+
+%   fitting Boltzmann to control, imported 
 opt = optimset('MaxFunEval',10000);
 ff = @Boltzmann;
 [par, ~, ~, ~]=fminsearch(ff,[5,0.5],opt,control_amps,...
@@ -65,9 +71,6 @@ k50 = NaN(size(stimulus,2),size(stimulus(1,1).t,3));
 %%%%%% Conditioning stimulus loop
 % for l = 1 : size(stimulus,2)
 parfor l = 1 : size(stimulus,2)
-%   It turned out to be very efficient to have the parfor loop as the
-%   outernmost for loop. The calculation time was cut down from 300-500 s
-%   to ~ 150 s including opening the matlab pool (10 s) and closing it (5s)
 
     %   parfor: prepare dummy variables for peakInitial and peakRecovery
     dummy1=nan(size(stimulus(1,l).t,1),size(stimulus(1,l).t,3));
@@ -113,7 +116,6 @@ parfor l = 1 : size(stimulus,2)
                     dummy3(m,:) = dummy3(l,:);
                 end;
                 
-
                 %   recovery peak extraction
                 [pks, ix2] = findpeaks (-g(dummy3(m,n):int64(sum(stimulus(1,l).t(m,1:end-2,n))/dt)),...
                                 'npeaks',1);
@@ -150,8 +152,6 @@ parfor l = 1:size(normal,3)
     x50(l,:) = x50_temp;
     k50(l,:) = k50_temp;
 end
-
-
 
 %%%%%%%%%%% preparing Hao 3G: computation of Tau activation and adaptive
 %%%%%%%%%%% shift

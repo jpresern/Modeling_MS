@@ -1,5 +1,24 @@
-%%% Written by Janez Presern, 2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   This function draws figures and produces .ps (& .pdf) files
+%   During normal modeling it is called by function Modeling_DRG.m. It is
+%   possible to execute this function "solo" for which it is required to
+%   uncomment/add the line beneath the "function [output]..." line,
+%   containing project name ('Project=' which is working folder, 
+%   containing Results subfolder, which in turn contains results you are 
+%   interested in). The modeling results are specified in 'fn' where the
+%   correct number should be added to '_Results_'.
+%   See examples below.
 
+%   Input:
+%       Project ... project folder, containing results subfolder.
+%       fn      ... file name, containing the name of result file
+
+%   Output
+%       a .mat file, called Output_DRG_Results_X.mat, X matching the number
+%       in input parameters. Output_DRG_Results_X contains most of the
+%       computations of this single run, also useful for a crosscheck.
 
 function [output] = Modeling_DRG_Report(Project,fn)
 %% % Loads results from Results_X.mat file

@@ -1,20 +1,36 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Function computes and draws the responses to desensitization with a
+%   prepulse (Hao Fig2). 
+
 %   Function requires:
 %       dt..                sampling rate
 %       stimamp..           stimulus description (amplitudes changes)
 %       stimTime..          stimulus description (time durations of amplitude changes
-%       Imax..              vector of maximum 
-%       cost14.....        cost functions
-%       variables  ..     variable values as inserted by fminsearch
-%       variables_names ..names of variables
-%       peaksMeasured_recovery .. experimentally measured recovery peaks
-%       cw1...cw2..       cost weights
-%       wFig2   ..        point weights
+%       Imax..              vector of maximum responses in unconditioned
+%                           system (situation Fig 3)
+%       Diagram_y           vector of the I-R curve values from literature
+%       var          ..     variable values as inserted by fminsearch
+%       var_names           ..names of variables
+%       cmap1, cmap2 ..     color maps
+%       fn ..               filename (Results_XX) to identify the model
+%                           iteration
+%       
 %   Function outputs:
-%       outputs.Fig2.model.peakRecovery..  maximum current g at various stimuli amplitudes
-%       outputs.c1,              ...       computed costs
+%       f             ..    figure handle
+%       output.stimulus.t ..generated time course of stimulus
+%       output.stimulus.amp.generated amplitude course of stimulus
+%       output.stimulus.defAmp..colected maximum amplitudes of stimulus
+%       output.model.t ..   time line of model response
+%       output.model.I ..   time course of current(amplitude) model
+%                           response
+%       output.experiment.x50k50 .. mid point and slope of experimentally 
+%                           obtained I-R curve for inactivation (Hao Fig2)
+%       output.model.x50k50.mid point and slope for model generated I-R
+%                           curve for inactivation
+%       output.model.peakPoke .. model peak current of the prepulse
+%       output.model.peakRePoke..model peak current of the test stimulus
 
 function [f, output] = Draw_2A(dt, stimAmp, stimTime,...
                             Imax,Diagram_y,...
@@ -23,7 +39,7 @@ function [f, output] = Draw_2A(dt, stimAmp, stimTime,...
 
 f = figure;
 
-%   top pane - draw stimulus
+%%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the stimulus %%%%%%%%%%%%%%%%%%%%%%
 s(1) = axes('OuterPosition', [0 0.8 1 0.2]);
 set(gca,'XTickLabel',[]);
 
@@ -41,14 +57,11 @@ xlim ([0 90]);
 title(horzcat(fn,': ','Desenzitization in DRG neurons using poke - repoke (Hao 2010, Fig.2A)'));
 grid on;
 
-
 output.stimulus.t=x;
 output.stimulus.amp=y;
 output.stimulus.defAmp = stimAmp(:,2);
 
-%   middle pane - draw model responses
-Ix = nan(1,1);
-    
+%%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the responses %%%%%%%%%%%%%%%%%%%%%%    
 s(2) = axes('OuterPosition', [0 0.4 1 0.4]); 
 
 hold on;
@@ -77,15 +90,13 @@ for a = 1 : size(stimTime,1)
 
 end;
 hold off;
-
-
 ylim ([-1.1 0]);
 xlim ([0 90]);
 xlabel('t [ms]');
 ylabel('I/I_{max}');
 grid on;
 
-%   bottom pane - draw intensity - response curves
+%%%%%%%%%%%%%%%%%%%% Calculate and draw the intensity response curves 
 s(3) = axes ('OuterPosition', [0 0 1 0.3]); 
 
 %   boltzmann fit of the Hao2010 2B data
@@ -93,7 +104,8 @@ x2a = [0.1:0.1:9];
 fig2Boff = Diagram_y - min(Diagram_y);
 fig2Bnorm = fig2Boff./max(fig2Boff);
 ff = @Boltzmann;
-% [param, ~, ~, ~]=fminsearch(ff,[3.6,-2],[],output.stimulus.defAmp,output.model.peakRePoke./min(output.model.peakRePoke));
+
+%   boltzmann fit of the experimental 2B/2A model data
 [paramExp, ~, ~, ~]=fminsearch(ff,[4.8,-1.2],[],output.stimulus.defAmp,fig2Bnorm);
 fit2B = 1./(1+exp((paramExp(1)-x2a)/paramExp(2)))+min(Diagram_y)./max(Diagram_y);
 fit2BB = fit2B./max(fit2B);

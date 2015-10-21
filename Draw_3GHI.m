@@ -2,6 +2,37 @@
 %   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%   Function computes and draws time constants of inactivation and adaptation
+%   Function also draws contributions of adaptation and inactivation to the
+%   desensitization.
+
+%   Function requires:
+%       exp3GHIInactAdapt.. published time constants of inactivation and
+%                           adaptation (Hao 2010, Fig 3)
+
+%       exp3IInactAdapt ..  published contributions of adaptation and
+%                           inactivation (Hao 2010, Fig 3I)
+%       tauAct  ..          time constant of adaptation obtained from model
+%       tauInact ..         time constant of inactivation from model
+%       adaptShift ..       adaptive shift from the model
+%       peakRecovery ..     peak currents from desentization tests
+%       cmap1       ..      color maps
+
+%   Function outputs:
+%       f             ..    figure handle
+%   output.model.paramInactExp.. mid point and slope for Boltzmann fit of
+%                                published experimental contribution of
+%                                inactivation (Hao 2010, Fig3I)
+%   output.model.paramAdaptExp ..mid point and slope for Boltzmann fit of
+%                                published experimental contribution of
+%                                adaptation (Hao 2010, Fig3I)
+%   output.model.paramInact ..   mid point and slope for Boltzmann fit of
+%                                contribution of inactivation from the model
+%   output.model.paramAdapt ..   mid point and slope for Boltzmann fit of
+%                                contribution of adaptation from the model
+%   output.model.ratioInact ..   ratio between inactivated and available
+%                                fraction from the model
+
 function [f, output] = Draw_3GHI (exp3GHInactAdapt,exp3IInactAdapt,...
                                     tauAct, tauInact, adaptShift,...
                                     peakRecovery,...

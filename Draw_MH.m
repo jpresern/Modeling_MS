@@ -1,7 +1,16 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Function plots the activation and inactivation curves for the
+%   ramp-and-hold stimuli
 
+%   Function requires:
+%       stimamp..           stimulus description (amplitudes changes)
+%       pred_m0_x, pred_m0_y .. activation coordinates obtained by the model
+%       pred_h0_x, pred_h0_y .. activation coordinates obtained by the model
+
+%   Function outputs:
+%       fig           ..    figure handle
 
 function fig  = Draw_MH(stimAmp, pred_m0_x, pred_m0_y,...
                             pred_h0_x, pred_h0_y)

@@ -1,19 +1,21 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Function computes the responses to tests with different conditioning
+%   amplitudes and durations. 
 %   Function requires:
-%       model   ..        model type
-%       stimulus      ..  stimulus - structure containing 3D matrix with 
+%       model   ..         model type
+%       stimulus      ..   stimulus - structure containing 3D matrix with 
 %                           stim times & stimulus amplitudes
-%       variables  ..     variable values as inserted by fminsearch
-%       variables_names ..names of variables
-%       control_amps ...  amplitude from control stimulus ExpData.Fig3A....
-%       control_pks ..    peaks from the ExpData.Fig3A.modeled.iMax
-%       cw1...cw2..       cost weightss
-%       wFig2   ..        point weights
+%       varr        ..     variable values as inserted by fminsearch
+%       varr_names ..      names of variables
+
 %   Function outputs:
-%       outputs.Fig6.model.peakRecovery..  maximum current g at various stimuli amplitudes
-%       outputs.c1,              ...       computed costs ...
+%   out.model.peakInitial ..    a matrix of peaks elicited by conditionig
+%                               stimuli
+%   out.model.peakRecovery..    a matrix of peaks elicited by test stimuli
+%   out.model.stimAmp ..        a matrix of all stimuli amplitudes for all
+%                               stimuli used
 
 
 function out = compute3CD (model,stimulus,...
@@ -25,7 +27,7 @@ stimAmp = nan(size(stimulus(1,1).t,1),size(stimulus,2));
 %%%%%%%%%%%% calculates the stimulus amplitudes only, not for stimulation
 for val0 = 1:size (stimulus,2)
     for val1 = 1:size (stimulus(1,val0).t,1)
-        stimAmp(val1, val0) = sum (stimulus(1,val0).amp(val1,1:4,1));%%%%A JE TO PRAV IZRACUN? BI TU MORALO BIT 1:3?
+        stimAmp(val1, val0) = sum (stimulus(1,val0).amp(val1,1:4,1));
     end;
 end;
                             

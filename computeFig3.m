@@ -1,6 +1,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Function computes the main stimulus (poke-and-hold). It compares the
+%   model response to the published experiment traces. At the same time it
+%   also compares the I-R curve of the model to the publisehd one.
+
 %   Function requires:
 %       model   ..        model type
 %       tT      ..        stimulus time
@@ -30,7 +34,6 @@ function [out,varargout] = computeFig3 (model,tT,ampT,ProtocolIndex,...
 %   variable prealocation
 iMax = nan(1,length(ProtocolIndex));
 r = zeros(1, length(ProtocolIndex));
-% r = 0;
 cS = 0;
 cSS = 0;
 c2 = 0;
@@ -74,8 +77,6 @@ end;
 c1 = nanmean(r.*wFig3(1:length(r)));   % calculates penalties over all recordings
 c3 = nanmean(cS);
 c4 = nanmean(cSS);
-            
-
 
 %%% Fitting the Hao Figure 3A (control) - peaks only
 %%%%%%%%%%%%%%%% C2 compare onset response curves %%%%%%%%%%%%%%%%%%%%%%%%

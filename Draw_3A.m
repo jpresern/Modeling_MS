@@ -1,25 +1,52 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Function computes and draws the responses to the ramp-and-hold stimulus
+%   (Hao Fig1, RA currents). 
+
 %   Function requires:
 %       dt..                sampling rate
 %       stimamp..           stimulus description (amplitudes changes)
 %       stimTime..          stimulus description (time durations of amplitude changes
-%       Imax..              vector of maximum 
-%       cost14.....        cost functions
-%       variables  ..     variable values as inserted by fminsearch
-%       variables_names ..names of variables
-%       peaksMeasured_recovery .. experimentally measured recovery peaks
-%       cw1...cw2..       cost weights
-%       wFig2   ..        point weights
+%       expAmp ..           experimentally obtained current traces
+%                           (published by Hao 2010)
+%       expTime ..          time line of the experiment (published by Hao
+%                           2010)
+%       var  ..             fitted variables and constants
+%       varInitial ..       initial values of variables and constants
+%       varLims ..          parameter limits (low & high) determining
+%                           possible parameter values
+%       var_names ..        names of variables
+%       weights ..          which experiments are being fit
+%       recWeights ..       weights for individual traces
+%       cmap1,cmap2 ..      color maps
+%       fn ..               filename (Results_XX) to identify the model
+%                           iteration
+
 %   Function outputs:
-%       outputs.Fig2.model.peakRecovery..  maximum current g at various stimuli amplitudes
-%       outputs.c1,              ...       computed costs
+%       f             ..    figure handle
+%       output.stimulus.t ..generated time course of stimulus
+%       output.stimulus.amp.generated amplitude course of stimulus
+%       output.stimulus.ampMax..colected maximum amplitudes of stimulus
+%       output.model.t ..   time line of model response
+%       output.model.I ..   time course of current(amplitude) model
+%                           response
+%       output.model.Imax ..current peaks from the model.
+%       output.model.x50k50.mid point and slope for model generated I-R
+%                           curve for inactivation
+%       output.model.tau .. time constant of decay of the maximum response
+
+%       output.experiment.t .. expTime (see inputs)
+%       output.experiment.I .. expAmp (see inputs)
+%       output.experiment.Imax..experimentally obtained current peaks
+%       output.experiment.tau .. time constant of decay of the maximum response
+%       output.experiment.x50k50 .. mid point and slope of experimentally 
+%                           obtained I-R curve for inactivation (Hao Fig2)
+
 
 function [fig, output] = Draw_3A(dt, stimAmp, stimTime, expAmp, expTime, var,...
                             varInitial, varLimits, var_names,...
                             weights, recWeights, cmap1, cmap2, fn)
-
 
 fig = figure;
 
@@ -123,10 +150,9 @@ output.experiment.tau = tauExp;
 xx = linspace(0,9,100);
 
 s(3) = axes ('OuterPosition', [0 0 1 0.3]);
-hold on;
-
 set(gca,'XTick',stimAmp(:,2));
 
+hold on;
 % plot Boltzmann first, so the data points are plotted *over* the lines.
 ff = @Boltzmann;
 
@@ -163,7 +189,6 @@ text(6,0.4,['exp x_{50} = ', num2str(paramExp(1)),...
 text(6,0.5,['mod x_{50} = ', num2str(paramMod(1)),...
     ' mod k = ', num2str(paramMod(2))],...
         'HorizontalAlignment','left','VerticalAlignment','top','Color',cmap1(2,:));
-
 
 hold off;
 xlabel ('Stimulus amplitude [\mum]');

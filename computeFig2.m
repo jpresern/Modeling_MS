@@ -1,20 +1,21 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Function computes the desensitization with a prepulse and compares the
+%   I-R curve with the one published by Hao2010, fig 2.
 %   Function requires:
 %       model   ..        model type
 %       tT      ..        stimulus time
 %       ampT    ..        stimulus amplitude at times tT
 %       ProtocolIndex ..  which of the traces/points shall we fit
-%       cost14.....        cost functions
 %       variables  ..     variable values as inserted by fminsearch
 %       variables_names ..names of variables
-%       peaksMeasured_recovery .. experimentally measured recovery peaks
-%       cw1...cw2..       cost weights
+%       peaksMeasured_rePoke .. experimentally measured recovery peaks
 %       wFig2   ..        point weights
+
 %   Function outputs:
-%       outputs.Fig6.model.peakRecovery..  maximum current g at various stimuli amplitudes
-%       outputs.c1,              ...       computed costs
+%       outputs.peakRePoke..  maximum current g at various stimuli amplitudes
+%       cost              ...       computed costs
 
 function [out,varargout] = computeFig2 (model,tT,ampT,ProtocolIndex,...
                                 variables,variables_names,dt,...
@@ -44,9 +45,9 @@ end;
 %%%         compares the measured peaks against the model
 
 peaksRepoke = peaksPredicted_rePoke./min(peaksPredicted_rePoke);
-c1 = sum((wFig2(ProtocolIndex)/length(wFig2(ProtocolIndex))).*...% preparing the weights for the estimator C2
-    (peaksRepoke - peaksMeasured_rePoke(ProtocolIndex)).^2)./...                           % subtracting modeled and recorded peaks
-    abs((mean(peaksMeasured_rePoke(ProtocolIndex)))*length(peaksPredicted));                                 % ?normalizing?
+c1 = sum((wFig2(ProtocolIndex)/length(wFig2(ProtocolIndex))).*...
+    (peaksRepoke - peaksMeasured_rePoke(ProtocolIndex)).^2)./...                       
+    abs((mean(peaksMeasured_rePoke(ProtocolIndex)))*length(peaksPredicted)); 
 
 %%%%%  output section
 cost = c1;

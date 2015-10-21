@@ -2,6 +2,27 @@
 %   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
+%   Function computes and draws the responses to the desensitization tests
+%   for a selected conditioning amplitude (Hao Fig3). 
+
+%   Function requires:
+%       dt..                sampling rate
+%       stim    .           stimulus description (amplitudes changes)
+%       ampMax ..           maximum stimulus amplitude used in modeling
+%       Imax ..             maximum current by control (Hao Fig 1 (RA), Hao Fig
+%                           3A)
+%       x50k50      ..      midpoint and slope for the control I-R
+
+%       var  ..             fitted variables and constants
+%       var_names ..        names of variables
+
+%       cmap1,cmap2 ..      color maps
+%       marmap ..           marker map for plotting
+%       fn ..               filename (Results_XX) to identify the model
+%                           iteration
+
+%   Function outputs:
+%       f             ..    figure handle
 
 function [f] = Draw_3CD (dt, stim,...
                             ampMax, Imax, x50k50,...
@@ -9,16 +30,13 @@ function [f] = Draw_3CD (dt, stim,...
                             cmap1, cmap2, marmap, fn)
 
 
-
 %%%% Conditioning stimuli loop
-for l = 5%1:9        %   conditioning higher than 5.7 was not done as it is not possible to fit with boltzmann (not enough points)
+for l = 5   %   select which conditioning amplitude you wish
     
-
+%   open new figure
 f = figure;
 
-set (gca, 'Visible', 'off');
-
-%%%%%%%%%%%% drawing stimulus
+%%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the stimulus %%%%%%%%%%%%%%%%%%%%%%
 s(1) = axes ('OuterPosition', [0 0.8 1 0.2]);
 set(gca,'XTickLabel',[]); 
 
@@ -46,7 +64,7 @@ grid on;
 title(horzcat(fn,': ','Desensitization process (Hao 2010, Fig.3CDE)'));
 
 
-%%%%%%%%%%%%% drawing model responses
+%%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the responses %%%%%%%%%%%%%%%%%%%%%%
 s(2) = axes ('OuterPosition', [0 0.4 1 0.4]);
 
 %   prepares the variables for the both the conditioning stimulus peak and
@@ -54,16 +72,14 @@ s(2) = axes ('OuterPosition', [0 0.4 1 0.4]);
 peakInitial = NaN(size(stim(1,l).t,1),size(stim(1,l).t,3));
 peakRecovery = peakInitial;
 ix1 = peakInitial;
-% ix2 = peakInitial;
 ix2 = [];
-
-
-hold on;
 
 %   prepare variable to store current, computed in the response to
 %   conditioning as a reference for peak extraction.
 condResp = [];    
 
+%   hold th figure
+hold on;
 %%%%% Amplitude loop - start at slikca value as it mathces the line of NaN
 %%%%% Delay loop    
 for n = 1 : size (stim(1,l).t,3) 
@@ -94,7 +110,6 @@ for n = 1 : size (stim(1,l).t,3)
                 condResp = results.g;
                 [peakInitial(m,n), ix1(m,n)] = min(condResp);
                 %%% problem with no peaks at the 0 stimuli
-%                     if dummy3(m,n) == length(condResp)
                 if ix1(m,n) >= int64(sum(stim(1,l).t(m,1:3,n))/dt);
                     ix1(m,n) = int64(sum(stim(1,l).t(m,1:3,n))/dt);
                 end
@@ -112,7 +127,6 @@ for n = 1 : size (stim(1,l).t,3)
         end;
         peakRecovery (m,n) = 0;
         if ~isempty(pks)
-%             peakRecovery (m,n) = -pks-condResp(ix2+ix1(m,n));
             peakRecovery (m,n) = -pks-condResp(ix2);
         end;
         plot(results.t,results.g,'-','Color',cmap2(n,:));
@@ -129,7 +143,7 @@ grid on;
 hold off;
 
 
-%%%%%%%%%% drawing intensity response curves Hao 3E
+%%%%%%%%%% drawing intensity - response - no normalizaiton %%%%%%%%%
 
 s(3) = axes ('OuterPosition', [0 0 0.5 0.3]);
 
@@ -143,7 +157,6 @@ x50 = nan (size(stimAmp,2),6);
 k50 = nan (size(stimAmp,2),6);
 
 %   offsets to zero and normalizes the input values
-% offset = peakRecovery-repmat (max(peakRecovery),[13,1,1]);
 offset = peakRecovery;
 normal = offset./repmat(min(offset),[13,1,1]);
 
@@ -162,45 +175,34 @@ grid on;
 ylim ([0 1.01]);
 xlim ([0 9]);
 
+%%%%%%%%%%% Drawing intensity - response after normalization %%%%%%%%%%%
 s(4) = axes ('OuterPosition', [0.5 0.0 0.5 0.3]);
 
-for l = 5%1:size(stimAmp,2)
-%     fig(1,l) = figure;
+for l = 5
     
     x = stimAmp(:,l);
-%     yy = normal(:,:,l);
     yy = normal;
 
     x = x(l:end);
     yy = yy (l:end,:);
     %   calls the fit and plots for each delay in the matrix
     opt = optimset('MaxFunEval',10000);
-%     ret = @(a,x)1./(1+exp((a(1)-x)/(a(2))));
     ff = @Boltzmann;
     hold on;
     for bb = 1 : size(yy,2);
         y = (yy(:,bb));
-        %%% plot points
         
-%%%%%   computing x50 & k50 using fminsearch
+        %%%%%   computing x50 & k50 using fminsearch
 
         [param, ~, ~, ~]=fminsearch(ff,[5,0.5],opt,x(2:end),y(2:end));
-%         %   computing x50 & k50 using lsqcurvefit 
-%         [param,~,~,~,~] = lsqcurvefit (ret,[5;0.5],x(2:end),y(2:end));
-        
+
         %   puts Stim50 and k @ stim50 into separate variables
         x50(l,bb) = param(1);
         k50(l,bb) = param(2);
         fit = 1./(1+exp((param(1)-xx)/param(2)));
-        %%% fit
+
+        %   plot fits
         plot(xx,fit, '-','Color',cmap2(bb,:),'LineWidth',2);
-        
-        xlabel ('Stimulus [\mum]');
-        ylabel ('I/I_{max}');
-        xlim ([0 9]);
-        ylim ([0 1]);
-%         title (horzcat ('Cond. stim. amp. ',mat2str(conAmp(l)),' \mum Delay ', mat2str(delayy(bb))));
-        grid on;
         
         %%% plot fits
  
@@ -210,7 +212,7 @@ for l = 5%1:size(stimAmp,2)
         plot(xx,fit, '-','Color',cmap1(7,:),'LineWidth',2);
         plot (x50(l,bb),0.5, 'Color',cmap1(5,:),'MarkerSize',10,'Marker','x','LineWidth',2);
         plot (x50k50(1),0.5,'Color',cmap1(5,:),'MarkerSize',10,'Marker','x','LineWidth',2);
-%         legend('Original','Fit','Location','northwest');
+        
         %%% plot points
         plot(x,y,marmap(bb),'Color',cmap2(bb,:),'LineWidth',2);
         plot (ampMax,...
@@ -220,11 +222,13 @@ for l = 5%1:size(stimAmp,2)
     hold off;
     set(gca,'XTick', conAmp);
     set(gca,'XTickLabel', conAmp);
+    
+    xlabel ('Stimulus [\mum]');
+    ylabel ('I/I_{max}');
+    xlim ([0 9]);
+    ylim ([0 1]);
+    grid on;
+        
 end;
-
-
-
-
-ss{length(f)} = s; s = [];
 
 end;

@@ -1,6 +1,28 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Function computes and draws the recovery from desensitization
+%   (Hao Fig6D, supp fig 1D.). 
+
+%   Function requires:
+%       dt..                sampling rate
+%       stimamp..           stimulus description (amplitudes changes)
+%       stimTime..          stimulus description (time durations of amplitude changes
+%       Diagram_x ..        experimentally obtained delay - response curve (time
+%                           position)
+%       Diagram_y ..        experimentally obtained delay - response curve
+%                           (currents)
+%       var  ..             fitted variables and constants
+%       var_names ..        names of variables
+%       cmap1,cmap2 ..      color maps
+%       fn ..               filename (Results_XX) to identify the model
+%                           iteration
+
+%   Function outputs:
+%       f             ..    figure handle
+%   output.model.peakInitial..peak currents to the prepulse
+%   output.model.peakRecovery..peak currents to the test stimulus
+
 
 function [f, output] = Draw_6D (dt, stimAmp, stimTime,...
                                     Diagram_x, Diagram_y,...

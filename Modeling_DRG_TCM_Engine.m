@@ -6,39 +6,26 @@
 % This function simulates transduction currents of DRG neurons.
 % Models are based on the paper Hao and Delmas 2010.
 %
-%
-%
-%
-%
 % The model is a phenomenological description of the DRG receptor
 % current recorded in a voltage-clamp mode at holding potential -60mV.
 % Current measured at a constant holding potential is linearly proportional
 % to the conductance of the transduction channels at that potential, therefore
 % we use conductance instead of currents in the model (g=I/E).
 %
-
-
-
-
 % Input parameters:
 % 
 % ModelName... name of the model (use ModelName_Report for using the
-% extended version, which produces data for report)
-% time... ramp stimulus time intervals (length of all dynamic and static
-% phases in ordered as they come)
+%               extended version, which produces data for report)
+% time...      ramp stimulus time intervals (length of all dynamic and static
+%               phases in ordered as they come)
 % amplitude... amplitudes of individual stimulus phases(amplitude of 
-% static phases is 0; amplitude of dynamic phases determines the relative
-% shift of stimulus strength during the dynamic phase)
+%               static phases is 0; amplitude of dynamic phases determines 
+%               the relative shift of stimulus strength during the dynamic phase)
 % variables... values of variables used by the model
 % variables_names... names of variables used by the model
-% dt... integration step
-
-
-
+% dt...        integration step
 
 function [g,varargout]=Modeling_DRG_TCM_Engine(ModelName,time,amplitude,variables,variables_names,dt)
-
-
 
 % List of variables:
 
@@ -63,7 +50,6 @@ N = variables(strcmp(variables_names,'N'));     %   constant
 M = variables(strcmp(variables_names,'M'));     %   constant
 % P = variables(strmatch('P',variables_names,'exact'));
 % R = variables(strmatch('R',variables_names,'exact'));
-
 
 
 varargout = {[]};           %%%% Prepare empty structure
@@ -107,27 +93,25 @@ h = NaN(1,length(t));   % preparing the empty variable for computed inactivation
 % 3) tau_h * (dh/dt) = - h + h0(x);
 %
 % 1) conductancy of mechanosensitive channels
-% g...relative conductance of transduction channels
-% g_tot...total conductance of transduction channels (=1)
-% m...activation parameter
-% N...power reflecting the number of channel subunits
-% h...inactivation parameter (1-h ... fraction of un-inactivated channels)
-% M...power reflecting the number of channel subunits
+%   g...relative conductance of transduction channels
+%   g_tot...total conductance of transduction channels (=1)
+%   m...activation parameter
+%   N...power reflecting the number of channel subunits
+%   h...inactivation parameter (1-h ... fraction of un-inactivated channels)
+%   M...power reflecting the number of channel subunits
 
 % 2) dynamics of activation
-% tau_m...time constant of activation
-% dm/dt...time derivative of activation parameter
-% m0...onset activation curve (I/I_max(x)) (Hao and Delmas 2010, Fig3E)
-% x...stimulus [microns](Hao and Delmas 2010)
-% B...linear coefficient inactivation effect on adaptive shift 
+%   tau_m...time constant of activation
+%   dm/dt...time derivative of activation parameter
+%   m0...onset activation curve (I/I_max(x)) (Hao and Delmas 2010, Fig3E)
+%   x...stimulus [microns](Hao and Delmas 2010)
+%   B...linear coefficient inactivation effect on adaptive shift 
 
 % 3) dynamics of inactivation
-% tau_h...time constant of inactivation
-% dh/dt...time derivative of inactivation parameter
-% h0...un-inactivated fraction (Hao and Delmas 2010, Fig3E)
-% x...stimulus [microns](Hao and Delmas 2010)
-
-
+%   tau_h...time constant of inactivation
+%   dh/dt...time derivative of inactivation parameter
+%   h0...un-inactivated fraction (Hao and Delmas 2010, Fig3E)
+%   x...stimulus [microns](Hao and Delmas 2010)
 
 % Calculate the stimulus in whole
 x0 = 0;
@@ -161,7 +145,6 @@ if strcmp(ModelName,'DRG_TCM_Model_mh') % used for fitting
         g(c) = -A*(m_temp^N)*(1 - h_temp)^M;
     end;
 end;
-
 
 if strcmp(ModelName,'DRG_TCM_Model_mh_Report') % used for report
     % Calculate intial conditions:

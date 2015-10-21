@@ -1,6 +1,10 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Function computes the main stimulus (poke-and-repoke with various delay).
+%   It compares the model response to the published experiment traces. At the same time it
+%   also compares the I-R curve of the model to the published one.
+
 %   Function requires:
 %       model   ..        model type
 %       tT      ..        stimulus time
@@ -15,7 +19,7 @@
 %                           instensity/response curve
 
 %   Function outputs:
-%       outputs.Fig6.model.peakRecovery..  maximum current g at various stimuli amplitudes
+%       outputs.peakRecovery..  maximum current g at various stimuli amplitudes
 %       outputs.c1,.c2,          ...       computed costs
 
 function [out,varargout] = computeFig6 (model,tT,ampT,ProtocolIndex,...
