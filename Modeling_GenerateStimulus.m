@@ -1,6 +1,9 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Utiliy used in generating stimulus time course from stimulus segment
+%   changes and durations.
+
 function [stim_t,stim_amp] = Modeling_GenerateStimulus(t,StimInterval,StimAmplitude)
 
 stim_amp = NaN(size(StimInterval,1),length(t));
@@ -26,35 +29,5 @@ for val2 = 1:size (StimInterval,1)
 
 end;
     
-
-
-% for a = 1:size(StimInterval,1);
-%     
-%     if sum(StimInterval(a,:)) ~= 0
-%         
-%         Stim_Interv_temp(a,1) = 0;
-%         Stim_Interv_temp(a,[2:length(StimInterval(a,:))+1]) = cumsum(StimInterval(a,:));
-%         
-%         for b = 1:length(StimInterval(a,:));
-%             
-%             ind = find(t >= Stim_Interv_temp(a,b) & t <= Stim_Interv_temp(a,b+1));
-%             
-%             if isempty(ind) == 0
-%                 
-%                 if StimAmplitude(a,b) == 0;
-%                     stim_amp(a,ind) = sum(StimAmplitude(a,1:b-1));
-%                 else
-%                     stim_amp(a,ind) = sum(StimAmplitude(a,1:b-1)) +...
-%                         (t(ind) - sum(StimInterval(a,1:b-1)))*(StimAmplitude(a,b)/StimInterval(a,b));
-%                 end;
-%             end;
-%         end;
-%         
-%         ind2 = find(t > sum(StimInterval(a,:)));
-%         stim_amp(a,ind2) = sum(StimAmplitude(a,:));
-%         
-%     end;
-%     
-% end;
 
 

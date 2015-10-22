@@ -1,6 +1,21 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Utility function, prepareing the cost vectors for recorded traces 
+%   if weighting required
+
+%   Input
+%       rec_t ..        time line of the experiment
+%       rec_amp ..      amplitude values of the experiment
+%       CostFunInterv ..
+%       CostFun_Value ..
+%       dt ..           sampling interval
+%      
+
+%   Output
+%       output.cost_t
+%       output.cost_amp
+
 function output = Modeling_RecordingCostFun2(rec_t,rec_amp,CostFunInterv,CostFun_Value,dt)
 
 
@@ -60,8 +75,7 @@ for csf = 1 : size(CostFun_Time,1)
                 indd2 = dsearchn(CostFun_Time(csf,:)',CostFunIntervNum(csfn+1));
                 varr_temp(csfn) = mean((rec_amp(csf,indd1:indd2)-mean(rec_amp(csf,indd1:indd2))).^2);
                 mean_temp(csfn) = mean(rec_amp(csf,indd1:indd2));
-            end;
-            
+            end;           
 
             
             for csf2 = 1 : 2 : size(CostFunIntervNum,2);
@@ -81,11 +95,6 @@ for csf = 1 : size(CostFun_Time,1)
         end;
     end;
 end;
-
-
-
-
-
 
 output.cost_t = CostFun_Time;
 output.cost_amp = CostFun_Amp;

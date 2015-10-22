@@ -5,18 +5,157 @@
 %%% Function fits HH equations on mechanically activated currents in
 %%% various neurons
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-
+%
 % 1.One starts the function with entering "Modeling_DRG('DRG')" at the command window
 %   workspace MUST be set to folder containing Modeling_DRG.m
 % 1.Folder containing script must contain experimental subfolder (in this 
 %   example case 'DRG') in which the two files reside (see example):
-%       -file with start-up parameters
-%       -file with the initial fit parameters
+%       -file with start-up parameters (DRG_InitialFitParameters.mat)
+%       -file with the initial fit parameters (DRG_ExperimentalData_XX.mat)
 % 2.The experimental subfolder must also contain folder 'Results' in which
 %   the program dumps the results, figures etc....
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Current implementation fits 8 variables:
+%       tau_m   ..  time constant of activation
+%       tau_h   ..  time constant of inactivation
+%       A       ..  scaling of the stimulus
+%       B       ..  factor describing the linear relationship between adaptation and inactivation
+%       Hm      ..  slope for activation Boltzmann
+%       Xm      ..  midpoint for activation Boltzmann
+%       Hh      ..  slope for inactivation Boltzmann
+%       Xh      ..  midpoint for inactivatiob Boltzmann
+%
+%   Besides, 6 constants are used (only 4 are currently active)
+%       Am      ..  scaling for activation Boltzmann
+%       Ah      ..  scaling for inactivation Boltzmann
+%       N       ..  power reflecting the number of channel subunits
+%                   (inactivation)
+%       M       ..  power reflecting the number of channel subunits
+%                   (activation)
+%
+%   Constants can be easily transfered to variables and vice versa
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Fit parameters are stored in XX_InitialFitParameters.m 
+%       XX is replaced by project folder name
+%   
+%   1)    C_Weights:  a "switch" vector (len = 14) turning on or off fitting
+%           of experiments and rules. To turn off fitting replace 1 with 0
 
-
+%           Fitting Hao 3A/1A and its I-R curve:
+%               C_Weights(1) .. compare current traces          
+%               C_Weights(7) .. restrict current traces from Fig3A to 
+%                               approach 0 mV in steady-state
+%               C_Weights(9) .. keep current traces before the stimulus in 
+%                               Fig3A above 0.02
+%               C_Weights(2) .. compare I-R curves
+%               C_Weights(10).. penalize if min peak goes below -1.1
+%
+%           Fitting the Hao Figure 6D & 6E
+%               C_Weights(3) .. compare current traces          
+%               C_Weights(12).. compare recovery peaks of intensity    
+%                               response curves
+%
+%           Fitting the Hao Fig 2b
+%               C_Weights(14).. compare the I-R curves between control 
+%                               (Fig 3A) and inactived with prepulse
+%
+%           Fitting the Hao Fig 3GHI
+%               C_Weights(4) .. measures difference between modeled 
+%                               Tau Inact & Tau Adapt and measured 
+%                               Tau Inact & Tau Adapt
+%               C_Weights(5) .. measures difference between modeled 
+%                               adaptive shift and measured adaptive shift
+%               C_Weights(6) .. measures difference between modeled 
+%                               inactivated fraction and measured inactived
+%                               fraction
+%
+%           Restricting aactivation and inactivation
+%               C_Weights(8) .. penalize if h0 goes above 0.1 at x = 0
+%               C_Weights(13).. penalize if h0 goes above 0.1 at x = 0
+%
+%   2)  dt                   .. integration time step (determining sample 
+%                               rate)
+%   3)  ExperimentalData     .. name of the file containing data used in
+%                               fitting
+%   4)  Model                .. name of the model used in fitting (only one
+%                               implemented in the current version)
+%   5)  ModelInput_FitVariables ..vector containing initial values for
+%                               variables used in fitting
+%   6)  ModelInput_FitVariables_names ..vector containing names of the
+%                               variables used in fitting
+%   7)  ModelInput_ConstVariables ..vector containing values of the
+%                               constants used in fitting
+%   8)  ModelInput_ConstVariables_namees ..vector containing names of the
+%                               constants used in fitting
+%   9)  ModelInput_FitVariables_limits ..vector containing Hi and Lo
+%                               limits which limit possible values a 
+%                               variable can assume
+%   10) ModelInput_FitVariables_tol ..vector containing tolerance values 
+%                               (in fractions) if variable goes over the 
+%                               limit
+%   11) variableFitC_Weights .. Executing in multiple loop: matrix
+%                               containing multiple switch vectors for
+%                               multiple iterations of fitting. N of
+%                               columns should match the number of desired
+%                               iterations.
+%   11) variableFitParams    .. Executing in multiple loop: matrix
+%                               containing multiple vectors of initial fit 
+%                               parameters for multiple iterations of 
+%                               fitting. N of columns should match the 
+%                               number of desired iterations.
+%   12) variableFitParams_HiLims.. Executing in multiple loop: matrix
+%                               containing multiple vectors of Hi limits 
+%                               for multiple iterations of fitting. N of
+%                               columns should match the number of desired
+%                               iterations.
+%   13) variableFitParams_LoLims.. Executing in multiple loop: matrix
+%                               containing multiple vectors of Lo limits 
+%                               for multiple iterations of fitting. N of
+%                               columns should match the number of desired
+%                               iterations.
+%   14) variableFitParams_to .. Executing in multiple loop: matrix
+%                               containing multiple vectors of tolerances 
+%                               for multiple iterations of fitting. N of
+%                               columns should match the number of desired
+%                               iterations.
+%   15) C1 ..                   structure containing subsettings for 
+%                               fitting Fig3A/1 (switch C_Weight(1))
+%           StimulusTimeSpan .. determining the end of the relevance of the
+%                               data
+%           RecordingWeights .. weight values for individual stimulus value
+%           IndexOfStimuliToFit..switch turning on/off fitting of certain
+%                               stimuli
+%   16) C2 ..                   structure containing subsetting for fitting
+%                               I-R curve from Fig3A/1 (switch C_Weight(2)
+%           PointWeights ..     weight values for indiviual peak currents
+%   17) C3 ..                   structure containing subsettings for 
+%                               fitting Fig6DE (switch C_Weight(3))
+%           StimulusTimeSpan .. determining the end of the relevance of the
+%                               data
+%           RecordingWeights .. weight values for individual stimulus value
+%           IndexOfStimuliToFit..switch turning on/off fitting of certain
+%                               stimuli
+%           PointWeights ..     weight values for indiviual peak currents
+%   18) C4 ..                   structure containing subsettings for 
+%                               fitting Fig3GH (switch C_Weight(4))
+%           IndexOfStimuliToFit..switch turning on/off fitting of certain
+%                               stimuli
+%           PointWeights ..     weight values for indiviual peak currents
+%   19) C14 ..                  structure containing subseetings for
+%                               fitting figure Fig 2AB (switch
+%                               C_Weight(14))
+%           StimulusTimeSpan .. determining the end of the relevance of the
+%                               data
+%           RecordingWeights .. weight values for individual stimulus value
+%           IndexOfStimuliToFit..switch turning on/off fitting of certain
+%                               stimuli
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Data that will be fitted are stored in DRG_ExpementalData_Hao2010.mat
+%   !!Name of the file can be changed in InitialFitParam.mat!! 
+%   Currently the file contains experimental values of Hao & Delmas (2010)
+%   like we obtained them by scanning the values in their publication.
+%   Variable names reflect the names of the corresponding figures.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 function Modeling_DRG(Project_in)
 %%
@@ -77,8 +216,8 @@ Cost1_RecordingCostFun = Modeling_RecordingCostFun2(Cost1_Recording.rec_t,Cost1_
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cost function C3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Cost3_Stimulus = Modeling_CropStimulus(ExpData.Fig6D_10ms_Stimulus.t,ExpData.Fig6D_10ms_Stimulus.amp,InitialFitParam.C3.StimulusTimeSpan);
-Cost3_Recording =  Modeling_CropRecording(ExpData.Fig6D_10ms_Recording.ti,ExpData.Fig6D_10ms_Recording.ampi,...
+Cost3_Stimulus = Modeling_CropStimulus(ExpData.Fig6D_Stimulus.t,ExpData.Fig6D_Stimulus.amp,InitialFitParam.C3.StimulusTimeSpan);
+Cost3_Recording =  Modeling_CropRecording(ExpData.Fig6D_Recording.ti,ExpData.Fig6D_Recording.ampi,...
                     InitialFitParam.dt,Cost3_Stimulus.stim_t,Cost3_Stimulus.RecShift);
 Cost3_RecordingCostFun = Modeling_RecordingCostFun2(Cost3_Recording.rec_t,Cost3_Recording.rec_amp,...
                             InitialFitParam.C3.RecordingCostFun_Interval,...
