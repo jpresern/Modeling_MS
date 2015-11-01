@@ -280,9 +280,9 @@ fit_var = var.fit_var;
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cost function C1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Cost1_Stimulus = Modeling_CropStimulus(ExpData.Fig3A_Stimulus.t,ExpData.Fig3A_Stimulus.amp,InitialFitParam.C1.StimulusTimeSpan);
-Cost1_Recording = Modeling_CropRecording(ExpData.Fig3A_Recording.ti,...
-                    ExpData.Fig3A_Recording.ampi,...
+Cost1_Stimulus = Modeling_CropStimulus(ExpData.BasicIR_Stimulus.t,ExpData.BasicIR_Stimulus.amp,InitialFitParam.C1.StimulusTimeSpan);
+Cost1_Recording = Modeling_CropRecording(ExpData.BasicIR_Recording.ti,...
+                    ExpData.BasicIR_Recording.ampi,...
                     InitialFitParam.dt,Cost1_Stimulus.stim_t,Cost1_Stimulus.RecShift);
 Cost1_RecordingCostFun = Modeling_RecordingCostFun2(Cost1_Recording.rec_t,Cost1_Recording.rec_amp,...
                             InitialFitParam.C1.RecordingCostFun_Interval,...
@@ -290,8 +290,8 @@ Cost1_RecordingCostFun = Modeling_RecordingCostFun2(Cost1_Recording.rec_t,Cost1_
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cost function C3 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-Cost3_Stimulus = Modeling_CropStimulus(ExpData.Fig6D_Stimulus.t,ExpData.Fig6D_Stimulus.amp,InitialFitParam.C3.StimulusTimeSpan);
-Cost3_Recording =  Modeling_CropRecording(ExpData.Fig6D_Recording.ti,ExpData.Fig6D_Recording.ampi,...
+Cost3_Stimulus = Modeling_CropStimulus(ExpData.Recovery_Stimulus.t,ExpData.Recovery_Stimulus.amp,InitialFitParam.C3.StimulusTimeSpan);
+Cost3_Recording =  Modeling_CropRecording(ExpData.Recovery_Recording.ti,ExpData.Recovery_Recording.ampi,...
                     InitialFitParam.dt,Cost3_Stimulus.stim_t,Cost3_Stimulus.RecShift);
 Cost3_RecordingCostFun = Modeling_RecordingCostFun2(Cost3_Recording.rec_t,Cost3_Recording.rec_amp,...
                             InitialFitParam.C3.RecordingCostFun_Interval,...
@@ -299,7 +299,7 @@ Cost3_RecordingCostFun = Modeling_RecordingCostFun2(Cost3_Recording.rec_t,Cost3_
                         
 %%%%%%%%%%%%%%%%%%%%%%%%%%%% Cost function C14 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
                         
-Cost14_Stimulus = Modeling_CropStimulus(ExpData.Fig2A_Stimulus.t,ExpData.Fig2A_Stimulus.amp,InitialFitParam.C14.StimulusTimeSpan);
+Cost14_Stimulus = Modeling_CropStimulus(ExpData.InactFract_Stimulus.t,ExpData.InactFract_Stimulus.amp,InitialFitParam.C14.StimulusTimeSpan);
 
 
 
@@ -459,7 +459,7 @@ Modeling_DRG_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
             cost1Rec_amp = Cost1_Recording.rec_amp(ProtocolIndex1,:);
             cost1Cost_amp = Cost1_RecordingCostFun.cost_amp(ProtocolIndex1,:);
             cost1Rec_t = Cost1_Recording.rec_t(ProtocolIndex1,:);
-            peaksMeasured = -ExpData.Fig3A_Diagram.y'/100;  
+            peaksMeasured = -ExpData.BasicIR_IR.y'/100;  
             
             CW1 = InitialFitParam.C_Weights(1);
             CW2 = InitialFitParam.C_Weights(2);
@@ -494,7 +494,7 @@ Modeling_DRG_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
             ampT = Cost3_Stimulus.stim_amp(ProtocolIndex3,:);
             cost3Rec_amp = Cost3_Recording.rec_amp(ProtocolIndex3,:);
             cost3Cost_amp = Cost3_RecordingCostFun.cost_amp(ProtocolIndex3,:);
-            peaksMeasured_recovery = ExpData.Fig6E_Diagram.y;
+            peaksMeasured_recovery = ExpData.Recovery_IR.y;
             
             CW3 = InitialFitParam.C_Weights(3);
             CW12 = InitialFitParam.C_Weights(12);
@@ -524,7 +524,7 @@ Modeling_DRG_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
             ProtocolIndex14 = InitialFitParam.C14.IndexOfStimuliToFit;
             tT = Cost14_Stimulus.stim_t(ProtocolIndex14,:);
             ampT = Cost14_Stimulus.stim_amp(ProtocolIndex14,:);
-            peaksMeasured_rePoke = ExpData.Fig2B_Diagram.y'./max(ExpData.Fig2B_Diagram.y);
+            peaksMeasured_rePoke = ExpData.InactFract_IR.y'./max(ExpData.InactFract_IR.y);
             wFig2 = InitialFitParam.C14.PointWeights;
             
             
@@ -549,13 +549,13 @@ Modeling_DRG_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
         
         if InitialFitParam.C_Weights(4) ~= 0 || InitialFitParam.C_Weights(5) ~= 0 || InitialFitParam.C_Weights(6) ~= 0
         
-            stimulus = ExpData.Fig3C_Stimulus;
+            stimulus = ExpData.Conditioning_Stimulus;
             control_pks = output.BasicIR.Imax;
-            control_amps = ExpData.Fig3A_Stimulus.amp(:,2)';
+            control_amps = ExpData.BasicIR_Stimulus.amp(:,2)';
             
-            Fig3I = ExpData.Fig3I.InactAdapt;
-            Fig3I_PW = ExpData.Fig3I.PW_inact_adapt;
-            tauFig3GH = ExpData.Fig3HG_InactAdapt;
+            InactAdapt = ExpData.InactAdapt_InactAdapt.InactAdapt;
+            InactAdapt_PW = ExpData.InactAdapt_InactAdapt.PW_inact_adapt;
+            tauFig3GH = ExpData.InactAdapt_Tau;
             
             CW4 = InitialFitParam.C_Weights(4);
             CW5 = InitialFitParam.C_Weights(5);
@@ -565,8 +565,8 @@ Modeling_DRG_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
             [out, cost] = computeInactAdapt (model,stimulus,...
                                 variables,variables_names,dt,...
                                 control_pks,control_amps,...
-                                tauFig3GH, Fig3I,...
-                                CW4,CW5,CW6,Fig3I_PW);
+                                tauFig3GH, InactAdapt,...
+                                CW4,CW5,CW6,InactAdapt_PW);
         
             C(4) = cost(1); C(5) = cost(2); C(6) = cost(3);
             output.InactAdapt = out;
