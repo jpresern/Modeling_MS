@@ -60,7 +60,7 @@ xlim([0,1100]);
 ylabel ('stimulus amplitude [\mum]');
 hold off;
 grid on;
-title(horzcat(fn,': ','Desensitization of MS neuron using two-step paradigm'));
+title(horzcat(fn,': ','Desensitization of MS neuron using two-step paradigm'),'interpreter','none');
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the responses %%%%%%%%%%%%%%%%%%%%%%

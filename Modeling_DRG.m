@@ -3,66 +3,111 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %%% Function fits HH equations on mechanically activated currents in
-%%% various neurons
+%%% various neurons.
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   Included data set was obtained by digitizing the figures, published 
-%   in Hao & Delmas, 2010.
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   
+%   Requirements
 %
-% 0.One starts the function with entering "Modeling_DRG('DRG')" at the command window
-%   workspace MUST be set to folder containing Modeling_DRG.m
-% 1.Folder containing script must contain experimental subfolder (in this 
-%   example case 'DRG') in which the two files reside (see example):
+%   Current implementation requires Matlab 2014b or newer. Limiting factor
+%   is parallel computing toolbox, because starting parallel pool requires
+%   different syntax in older Matlab versions (2011b - 2014b).
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%   
+%
+%   Quick instructions
+%
+%   1)  Copy the function in desired folder.
+%   2)  One starts the function with entering "Modeling_DRG('DRG')" at the 
+%       command window workspace MUST be set to folder containing 
+%       Modeling_DRG.m
+%   3)  Folder containing script must contain experimental subfolder (in 
+%       this example case 'DRG') in which the two files reside (see 
+%       example):
 %       -file with start-up parameters (DRG_InitialFitParameters.mat)
 %       -file with the initial fit parameters (DRG_ExperimentalData_XX.mat)
-% 2.The experimental subfolder must also contain folder 'Results' in which
-%   the program dumps the results, figures etc....
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-%   Current implementation fits 8 variables:
-%       tau_m   ..  time constant of activation
-%       tau_h   ..  time constant of inactivation
-%       A       ..  scaling of the stimulus
-%       B       ..  factor describing the linear relationship between adaptation and inactivation
-%       Hm      ..  slope for activation Boltzmann
-%       Xm      ..  midpoint for activation Boltzmann
-%       Hh      ..  slope for inactivation Boltzmann
-%       Xh      ..  midpoint for inactivatiob Boltzmann
+%   4)  The experimental subfolder must also contain folder 'Results' in 
+%       which the program dumps the results, figures etc....
 %
-%   Besides, 6 constants are used (only 4 are currently active)
-%       Am      ..  scaling for activation Boltzmann
-%       Ah      ..  scaling for inactivation Boltzmann
-%       N       ..  power reflecting the number of channel subunits
-%                   (inactivation)
-%       M       ..  power reflecting the number of channel subunits
-%                   (activation)
-%
-%   Constants can be easily transfered to variables and vice versa
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   Tests were implemented in this model, following guide lines in
+%   excellent paper of Hao & Delmas, 2010, which contains probably biggest 
+%   set of experiments regarding desensitizaiton mechanisms.
+%   
+%   Model is designed to fit several types of experiments, singly or 
+%   simultaenously:
+%       1)  simple trapezoidal stimuli (ramp-and-hold-and release)
+%               1.1)    current traces evoked by the stimulus
+%               1.2)    I-R curve of the above traces
+%       2)  channel inactivation with a double pulse protocol. First pulse 
+%           of varying amplitude is used for conditioning. Test pulse is  
+%           delivered immediately after conditioning with a saturating 
+%           amplitude. Test reveals a fraction of channels inactivated 
+%           by conditioning.
+%               2.1)    inactivated fraction (peak currents amplitudes to
+%                       the test stimulus, plotted agains the conditioning
+%                       amplitude.
+%       3)  recovery from adaptation with a double pulse protocol. First
+%           pulse is delivered with saturating amplitude. Second, test
+%           stimulus is delivered with increasing time delay but with the 
+%           same amplitude.
+%               3.1)    current traces evoked by the stimulus
+%               3.2)    current peaks elicited by test stimulus plotted
+%                       against time delay
+%       4)  desensitization with a double step protocol. Conditioning is
+%           done with a trapezoidal stimulus, on top of which a test
+%           stimulus of variable amplitude is added at various time
+%           points.
+%               4.1)    time constants of inactivation and adaptation
+%               4.2)    inactivated fraction
+%               4.3)    adaptive shift
+%   
+%   An investigator can use this model to fit her or his own data (or
+%   perform meta-analysis), but there are minimum data requirements (see
+%   below):
+
+%   Minimum model data requirements:
+%       experimental data:  current traces and stimulus description
+%                           intensity-response(I-R) curve from exp. data
+%   Data should be formated as in the example.
+%
+%   Included data set was obtained by digitizing some key figures, published 
+%   in Hao & Delmas, 2010. Such approach has its price - one works on
+%   averaged data. Ideally this model should be used on data obtained in
+%   same cell.
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   
 %   Fit parameters are stored in XX_InitialFitParameters.m 
 %       XX is replaced by project folder name
 %   
 %   1)    C_Weights:  a "switch" vector (len = 14) turning on or off fitting
-%           of experiments and rules. To turn off fitting replace 1 with 0
-
-%           Fitting Hao 3A/1A and its I-R curve:
+%           of experiments and rules. To turn off fitting replace 1 with 0.
+%           See description of experiments above. If your data does not
+%           contain certain experiments, you can still use the model by
+%           turning off fitting of selected experiments.
+%
+%           Fitting simple trapezoidal stimuli (ramp-and-hold-and release) 
+%           and its I-R curve. Serves as a control.
 %               C_Weights(1) .. compare current traces          
-%               C_Weights(7) .. restrict current traces from Fig3A to 
+%               C_Weights(7) .. restrict current traces to 
 %                               approach 0 mV in steady-state
 %               C_Weights(9) .. keep current traces before the stimulus in 
-%                               Fig3A above 0.02
+%                               above 0.02
 %               C_Weights(2) .. compare I-R curves
 %               C_Weights(10).. penalize if min peak goes below -1.1
 %
-%           Fitting the Hao Figure 6D & 6E
+%           Fitting recovery from adaptation with a double pulse protocol
 %               C_Weights(3) .. compare current traces          
 %               C_Weights(12).. compare recovery peaks of intensity    
 %                               response curves
 %
-%           Fitting the Hao Fig 2b
+%           Fitting channel inactivation with a double pulse protocol
 %               C_Weights(14).. compare the I-R curves between control 
-%                               (Fig 3A) and inactived with prepulse
+%                               (simple trapezoidal stimulus) and inactived
+%                               with prepulse
 %
-%           Fitting the Hao Fig 3GHI
+%           Fitting desensitization with a double step protocol.
 %               C_Weights(4) .. measures difference between modeled 
 %                               Tau Inact & Tau Adapt and measured 
 %                               Tau Inact & Tau Adapt
@@ -122,17 +167,19 @@
 %                               columns should match the number of desired
 %                               iterations.
 %   15) C1 ..                   structure containing subsettings for 
-%                               fitting Fig3A/1 (switch C_Weight(1))
+%                               fitting simple trapezoidal stimuli 
+%                               (switch C_Weight(1))
 %           StimulusTimeSpan .. determining the end of the relevance of the
 %                               data
 %           RecordingWeights .. weight values for individual stimulus value
 %           IndexOfStimuliToFit..switch turning on/off fitting of certain
 %                               stimuli
 %   16) C2 ..                   structure containing subsetting for fitting
-%                               I-R curve from Fig3A/1 (switch C_Weight(2)
+%                               I-R curve (switch C_Weight(2)
 %           PointWeights ..     weight values for indiviual peak currents
 %   17) C3 ..                   structure containing subsettings for 
-%                               fitting Fig6DE (switch C_Weight(3))
+%                               fitting current responses 
+%                               (switch C_Weight(3))
 %           StimulusTimeSpan .. determining the end of the relevance of the
 %                               data
 %           RecordingWeights .. weight values for individual stimulus value
@@ -140,18 +187,42 @@
 %                               stimuli
 %           PointWeights ..     weight values for indiviual peak currents
 %   18) C4 ..                   structure containing subsettings for 
-%                               fitting Fig3GH (switch C_Weight(4))
+%                               fitting time constants (switch C_Weight(4))
 %           IndexOfStimuliToFit..switch turning on/off fitting of certain
 %                               stimuli
 %           PointWeights ..     weight values for indiviual peak currents
 %   19) C14 ..                  structure containing subseetings for
-%                               fitting figure Fig 2AB (switch
-%                               C_Weight(14))
+%                               fitting figure "Channel inactivation with a 
+%                               double pulse protocol (switch C_Weight(14))
 %           StimulusTimeSpan .. determining the end of the relevance of the
 %                               data
 %           RecordingWeights .. weight values for individual stimulus value
 %           IndexOfStimuliToFit..switch turning on/off fitting of certain
 %                               stimuli
+%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%
+%   Current implementation fits 8 variables:
+%       tau_m   ..  time constant of activation
+%       tau_h   ..  time constant of inactivation
+%       A       ..  scaling of the stimulus
+%       B       ..  factor describing the linear relationship between 
+%                   adaptation and inactivation
+%       Hm      ..  slope for activation Boltzmann
+%       Xm      ..  midpoint for activation Boltzmann
+%       Hh      ..  slope for inactivation Boltzmann
+%       Xh      ..  midpoint for inactivatiob Boltzmann
+%
+%   Besides, 6 constants are used (only 4 are currently active)
+%       Am      ..  scaling for activation Boltzmann
+%       Ah      ..  scaling for inactivation Boltzmann
+%       N       ..  power reflecting the number of channel subunits
+%                   (inactivation)
+%       M       ..  power reflecting the number of channel subunits
+%                   (activation)
+%
+%   Constants can be easily transfered to variables and vice versa
+%
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Data that will be fitted are stored in DRG_ExpementalData_Hao2010.mat
 %   !!Name of the file can be changed in InitialFitParam.mat!! 
@@ -331,14 +402,9 @@ copyfile(filename(inputDir,{inputDir,Project},horzcat(Project,'_InitialFitParame
 clearvars -except Project Project_in MaxInd
 
 %%% Following line outputs results, plots graphs and makes .pdf/.ps
-
-
-% Modeling_DRG_Report(Project_in,horzcat('Results_',num2str(MaxInd+1)));
 Modeling_DRG_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
 
-
-
-%%%%%%%%%%%%%%%%%%%%%% END Save results & plot graphs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%% END Save results & plot graphs %%%%%%%%%%%%%%%%%%%%%
 
 %% %%%%%%%%%%%%%%%%%%% START Fitting function %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function y = ChiSquare(fit_var)
@@ -347,7 +413,7 @@ Modeling_DRG_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
         dt = InitialFitParam.dt;
         output = {};
         
-        %%%%%%%%%%% Construct vector of variables %%%%%%%%%%%%%%%%%%
+        %%%%%%%%%%% Construct vector of variables %%%%%%%%%%%%%%%%%%%%%%%%%
         if length(fieldnames(var)) > 2
             variables = horzcat(fit_var,var.const_var);
             variables_names = horzcat(var.fit_var_name,var.const_var_name);
@@ -356,7 +422,7 @@ Modeling_DRG_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
             variables_names = var.fit_var_name;
         end;
         
-       %%%%%%%%%%% Penalize if variables are set outside limits %%%%%%%%%%%%
+       %%%%%%%%%%% Penalize if variables are set outside limits %%%%%%%%%%%
        FitVar_lim1 = InitialFitParam.ModelInput_FitVariables_limits(:,1);
        FitVar_lim2 = InitialFitParam.ModelInput_FitVariables_limits(:,2);
        FitVar_tol = InitialFitParam.ModelInput_FitVariables_tol(:);
@@ -370,20 +436,17 @@ Modeling_DRG_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
         % prepares empty vector for paid penalties
         C = zeros(1,length(InitialFitParam.C_Weights)); 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%        
-%%%%%%%%%%%%%%%%%%%%%% Fit to cost functions  %%%%%%%%%%%%%%%%%%%%%
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-        %%% modeling the response to simulated stimulus
-        %%%     peaksPredicted  ... simulated current peaks     
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%        
+%%%%%%%%%%%%%%%%%%%%%% Fit to cost functions  %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-                    
-%%% Fitting the Hao Figure 3A (control)
-%%% Parameters
-    % C1 compare current traces          
-    % C7 restrict current traces from Fig3A to approach 0 mV in steady-state
-    % C9 keep current traces before the stimulus in Fig3A above 0.02
-    % C2 compare intensity response curves
-    % C10 penalize if min peak goes below -1.1
+%%% Fitting the response to simple trapezoidal stimulus (control) %%%%%%%%%
+
+        % C1 .. compare current traces          
+        % C7 .. restrict model current traces from to approach 0 mV in steady-state
+        % C9 .. keep current traces before the stimulus in Fig3A above 0.02
+        % C2 .. compare intensity response curves
+        % C10 ..penalize if min peak goes below -1.1
 
 
         if InitialFitParam.C_Weights(1) ~= 0 || InitialFitParam.C_Weights(2) ~= 0 || InitialFitParam.C_Weights(7) ~= 0 ||...
@@ -408,21 +471,20 @@ Modeling_DRG_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
             wFig3 = InitialFitParam.C1.RecordingWeights;
             wFig3A = InitialFitParam.C2.PointWeights;
             
-            [out,cost] = computeFig3 (model,tT,ampT,ProtocolIndex1,...
+            [out,cost] = computeBasicIR (model,tT,ampT,ProtocolIndex1,...
                                cost1Rec_amp,cost1Cost_amp, cost1Rec_t,...
                                 variables,variables_names,dt,...
                                 peaksMeasured,...
                                  CW1,CW7,CW9,CW2,CW10,...
                                  wFig3,wFig3A);
             C(1) = cost(1); C(2) = cost(2); C(7) = cost(3); C(9) = cost(4); C(10) = cost(5);
-            output.Fig3A = out;
+            output.BasicIR = out;
         end;
         
-  
-%%% Fitting the Hao Figure 6D & 6E
-%%% Parameters
-    % C3 compare current traces          
-    % C12 compare recovery peaks of intensity response curves
+%%% Fitting Recovery from inactivation %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+        %   C3  .. compare current traces 
+        %   C12 .. compare recovery peaks of intensity response curves
 
         if InitialFitParam.C_Weights(3) ~= 0 || InitialFitParam.C_Weights(12) ~= 0
             
@@ -434,12 +496,11 @@ Modeling_DRG_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
             cost3Cost_amp = Cost3_RecordingCostFun.cost_amp(ProtocolIndex3,:);
             peaksMeasured_recovery = ExpData.Fig6E_Diagram.y;
             
-            
             CW3 = InitialFitParam.C_Weights(3);
             CW12 = InitialFitParam.C_Weights(12);
             wFig6E = InitialFitParam.C3.PointWeights;
             
-            [out,cost] = computeFig6 (model,tT,ampT,ProtocolIndex3,...
+            [out,cost] = computeRecovery (model,tT,ampT,ProtocolIndex3,...
                                cost3Rec_amp,cost3Cost_amp, ...
                                 variables,variables_names,dt,...
                                  peaksMeasured_recovery,...
@@ -447,34 +508,16 @@ Modeling_DRG_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
                                  wFig6E);
             
             C(3) = cost(1); C(12) = cost(2);
-            output.Fig6 = out;
+            output.Recovery = out;
         
         end;
 
-% %%%%%%%%C8 & C13 Penalization for activation and inactivation
+%%% Fitting inactivated fraction (double pulse protocol, C14) %%%%%%%%%%%%%
+    
+        %   C14 .. measueres difference between modeled inactivated
+        %           fraction and experimental inactivated fraction (I-R
+        %           only)
         
-        %%%%%%%%%%% C8 penalize if h0 goes above 0.1 at x = 0 %%%%%%%%%%%%
-        if InitialFitParam.C_Weights(8) ~= 0
-            Hh = variables(strncmp('Hh', variables_names, length('Hh')));
-            Xh = variables(strncmp('Xh', variables_names, length('Xh')));
-            z = h0(Hh,Xh);
-            if z > 0.1; C(8) = 1000; else C(8) = 0; end;
-        end;
-        
-        %%%%%%%%%%% C13 penalize if m0 goes above 0.1 at x = 0 %%%%%%%%%%%%
-        if InitialFitParam.C_Weights(13) ~= 0
-            Hm = variables(strncmp('Hm', variables_names, length('Hm')));
-            Xm = variables(strncmp('Xm', variables_names, length('Xm')));
-            z = m0(Hm,Xm);
-            if z > 0.1; C(13) = 1000; else C(13) = 0; end;
-        end;
-        
-
-        
-        
-%%%%%%%%%%%%%%%%%%%%%% C14 compare adapted onset curves Fig2B %%%%%%%%%%%%%%%%%%%%%%%%
-    %%% peaksPredicted_recovery     ... searches g(min) at certain
-        %%%                                 part of response
         if InitialFitParam.C_Weights(14) ~= 0
             
             %   Preparing variables for parfor loop (slicing et al.)
@@ -485,16 +528,18 @@ Modeling_DRG_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
             wFig2 = InitialFitParam.C14.PointWeights;
             
             
-            [out,cost] = computeFig2 (model,tT,ampT,ProtocolIndex14,...
+            [out,cost] = computeInactFract (model,tT,ampT,ProtocolIndex14,...
                              variables,variables_names,dt,...
                               peaksMeasured_rePoke,...
                               wFig2);
             
             C(14) = cost(1);
-            output.Fig2A = out;
+            output.InactFract = out;
         end;
         
-%%%%%%%%%%%%%%%%%%%%%% C4, C5, C6 figure 3GHI Hao2010%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%            
+%%% Fitting time constants of activation, inactivation and contributions of
+%%% adatpation and inactivation to the desensitizaition %%%%%%%%%%%%%%%%%%%
+        
         %   C4 .. measures difference between modeled Tau Inact & Tau Adapt
         %           and measured Tau Inact & Tau Adapt
         %   C5 .. measures difference between modeled adaptive shift and
@@ -505,7 +550,7 @@ Modeling_DRG_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
         if InitialFitParam.C_Weights(4) ~= 0 || InitialFitParam.C_Weights(5) ~= 0 || InitialFitParam.C_Weights(6) ~= 0
         
             stimulus = ExpData.Fig3C_Stimulus;
-            control_pks = output.Fig3A.Imax;
+            control_pks = output.BasicIR.Imax;
             control_amps = ExpData.Fig3A_Stimulus.amp(:,2)';
             
             Fig3I = ExpData.Fig3I.InactAdapt;
@@ -517,14 +562,33 @@ Modeling_DRG_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
             CW6 = InitialFitParam.C_Weights(6);
             
             
-            [out, cost] = compute3GHI (model,stimulus,...
+            [out, cost] = computeInactAdapt (model,stimulus,...
                                 variables,variables_names,dt,...
                                 control_pks,control_amps,...
                                 tauFig3GH, Fig3I,...
                                 CW4,CW5,CW6,Fig3I_PW);
         
             C(4) = cost(1); C(5) = cost(2); C(6) = cost(3);
-            output.Fig3GHI = out;
+            output.InactAdapt = out;
+        end;
+        
+ 
+%%% Penalization for activation and inactivation %%%%%%%%%%%%%%%%%%%%%%%%%%
+        
+        %    C8 penalize if h0 goes above 0.1 at x = 0
+        if InitialFitParam.C_Weights(8) ~= 0
+            Hh = variables(strncmp('Hh', variables_names, length('Hh')));
+            Xh = variables(strncmp('Xh', variables_names, length('Xh')));
+            z = h0(Hh,Xh);
+            if z > 0.1; C(8) = 1000; else C(8) = 0; end;
+        end;
+        
+        %   C13 penalize if m0 goes above 0.1 at x = 0 
+        if InitialFitParam.C_Weights(13) ~= 0
+            Hm = variables(strncmp('Hm', variables_names, length('Hm')));
+            Xm = variables(strncmp('Xm', variables_names, length('Xm')));
+            z = m0(Hm,Xm);
+            if z > 0.1; C(13) = 1000; else C(13) = 0; end;
         end;
  
 %%%%%%%%%%Final remarks%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%

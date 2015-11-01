@@ -9,9 +9,7 @@
 %       dt..                sampling rate
 %       stimamp..           stimulus description (amplitudes changes)
 %       stimTime..          stimulus description (time durations of amplitude changes
-%       Imax..              vector of maximum responses in unconditioned
-%                           system (situation Fig 3)
-%       Diagram_y           vector of the I-R curve values from literature
+
 %       var          ..     variable values as inserted by fminsearch
 %       var_names           ..names of variables
 %       cmap1, cmap2 ..     color maps
@@ -34,7 +32,6 @@
 %       output.model.peakRePoke..model peak current of the test stimulus
 
 function [f, output] = Draw_InactFract(dt, stimAmp, stimTime,...
-                            Imax,Diagram_y,...
                             var, var_names,...
                             cmap1, cmap2, fn)
 
@@ -55,7 +52,7 @@ hold off;
 
 ylabel('x [\mum]');
 xlim ([0 90]);
-title(horzcat(fn,': ','Inactivated fraction with double-pulse paradigm'));
+title(horzcat(fn,': ','Inactivated fraction with double-pulse paradigm'),'interpreter','none');
 grid on;
 
 output.stimulus.t=x;
@@ -63,7 +60,7 @@ output.stimulus.amp=y;
 output.stimulus.defAmp = stimAmp(:,2);
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the responses %%%%%%%%%%%%%%%%%%%%%%    
-s(2) = axes('OuterPosition', [0 0.4 1 0.4]); 
+s(2) = axes('OuterPosition', [0 0.35 1 0.4]); 
 
 hold on;
 for a = 1 : size(stimTime,1)
@@ -100,53 +97,32 @@ grid on;
 %%%%%%%%%%%%%%%%%%%% Calculate and draw the intensity response curves 
 s(3) = axes ('OuterPosition', [0 0 1 0.3]); 
 
-%   boltzmann fit of the Hao2010 2B data
-x2a = [0.1:0.1:9];
-fig2Boff = Diagram_y - min(Diagram_y);
-fig2Bnorm = fig2Boff./max(fig2Boff);
+step = [0.1:0.1:9];
 ff = @Boltzmann;
 
-%   boltzmann fit of the experimental 2B/2A model data
-[paramExp, ~, ~, ~]=fminsearch(ff,[4.8,-1.2],[],output.stimulus.defAmp,fig2Bnorm);
-fit2B = 1./(1+exp((paramExp(1)-x2a)/paramExp(2)))+min(Diagram_y)./max(Diagram_y);
-fit2BB = fit2B./max(fit2B);
-y50Exp = 1./(1+exp((paramExp(1)-paramExp(1))/paramExp(2)))+min(Diagram_y)./max(Diagram_y);
-y50Exp = y50Exp./max(fit2B);
-
-%   boltzmann fit of the model 2B/2A model data
+%   boltzmann fit of the model chan. inactivation and availability data
 fig2modoff = output.model.peakRePoke./min(output.model.peakRePoke);
 fig2modoff = fig2modoff - min(fig2modoff);
 fig2modnorm = fig2modoff./max(fig2modoff);
 [paramMod, ~, ~, ~]=fminsearch(ff,[3,-4],[],output.stimulus.defAmp,fig2modnorm);
-% fit2mod = (min(-output.model.peakRePoke)./max(-output.model.peakRePoke))./(1+exp((paramMod(1)-x2a)/paramMod(2)))+min(-output.model.peakRePoke);
-fit2mod = range(fig2modoff)./(1+exp((paramMod(1)-x2a)/paramMod(2)))+min(output.model.peakRePoke./min(output.model.peakRePoke));
+fit2mod = range(fig2modoff)./(1+exp((paramMod(1)-step)/paramMod(2)))+min(output.model.peakRePoke./min(output.model.peakRePoke));
 
 hold on;
 %   plot Boltzmann fit
-p5_2B = plot (x2a,fit2BB, '-','LineWidth',2, 'Color',cmap1(7,:));
-p6_2B = plot (x2a,fit2mod, '-','LineWidth',2, 'Color',cmap1(2,:));
+p6_2B = plot (step,fit2mod, '-','LineWidth',2, 'Color',cmap1(2,:));
 %   plot x50 values and their projections to the x-axis
-plot(paramExp(1),y50Exp,'k^');
-line ([paramExp(1), paramExp(1)],[0 y50Exp],'LineStyle','--','Color',cmap1(14,:));
-plot(paramMod(1),(min(-output.model.peakRePoke)./max(-output.model.peakRePoke))*0.5...
-    +min(-output.model.peakRePoke),'b^');
-line ([paramMod(1), paramMod(1)],...
-    [0 ((min(-output.model.peakRePoke)./max(-output.model.peakRePoke))*0.5...
-    +min(-output.model.peakRePoke))],'LineStyle','--','Color',cmap1(1,:));
+% plot(paramMod(1),(min(-output.model.peakRePoke)./max(-output.model.peakRePoke))*0.5...
+%     +min(-output.model.peakRePoke),'b^');
+% line ([paramMod(1), paramMod(1)],...
+%     [0 ((min(-output.model.peakRePoke)./max(-output.model.peakRePoke))*0.5...
+%     +min(-output.model.peakRePoke))],'LineStyle','--','Color',cmap1(1,:));
 hold off;
 
-output.experiment.x50k50 = paramExp;
 output.model.x50k50 = paramMod;
 
 hold on;
 p1_2B = plot (output.stimulus.defAmp, output.model.peakPoke./min(output.model.peakPoke), '.','Color',cmap1(1,:),'MarkerSize',20);
 p2_2B = plot (output.stimulus.defAmp, output.model.peakRePoke./min(output.model.peakRePoke),'*r', 'LineWidth',2,'MarkerSize',10);
-p3_2B = plot (output.stimulus.defAmp,Imax./min(Imax), '.','MarkerEdgeColor',cmap1(14,:),'LineWidth',2, 'MarkerSize',20);
-p4_2B = plot (output.stimulus.defAmp,Diagram_y./max(Diagram_y),'s','MarkerEdgeColor',cmap1(14,:),'LineWidth',2,'MarkerSize',5); 
-
-text(6,0.1,['exp x_{50} = ', num2str(paramExp(1)),...
-    ' exp k = ', num2str(paramExp(2))],...
-        'HorizontalAlignment','left','VerticalAlignment','top','Color',cmap1(14,:));
 
 text(6,0.2,['mod x_{50} = ', num2str(paramMod(1)),...
     ' mod k = ', num2str(paramMod(2))],...
@@ -159,8 +135,8 @@ xlabel('Conditioning stimulus [\mum]');
 grid on;
 
 ylim([0 1.01]);
-legend ([p1_2B, p3_2B, p2_2B,p4_2B,p5_2B,p6_2B],'cond. peak current model', 'cond. peak current experiment',...
-    'model channel availability','experiment channel availability','Boltzmann fit of the experiment','Boltzmann fit of the model','Location','west');
 
+legend ([p1_2B, p2_2B,p6_2B],'cond. peak current model',...
+    'model channel availability','Boltzmann fit of the model','Location','west');
 
 

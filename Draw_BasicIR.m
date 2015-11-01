@@ -46,7 +46,7 @@
 
 function [fig, output] = Draw_BasicIR(dt, stimAmp, stimTime, expAmp, expTime, var,...
                             varInitial, varLimits, var_names,...
-                            weights, recWeights, cmap1, cmap2, fn)
+                            ~, ~, cmap1, cmap2, fn)
 
 fig = figure;
 
@@ -65,7 +65,7 @@ end;
 hold off;
 
 ylabel('x [\mum]');
-title(horzcat(fn,': ','Response of mechano-sensitive neurons to ramp stimuli'));
+title(horzcat(fn,': ','Response of mechano-sensitive neuron to ramp stimuli'),'interpreter','none');
 grid on;
 
 output.stimulus.t=x;
@@ -74,7 +74,7 @@ output.stimulus.ampMax=max(y,[],2);
 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the responses %%%%%%%%%%%%%%%%%%%%%%
-s(2) = axes('OuterPosition', [0 0.4 1 0.4]); 
+s(2) = axes('OuterPosition', [0 0.35 1 0.45]); 
 
 hold on;
 results = [];
@@ -107,8 +107,6 @@ text(75,-0.15,num2str(var'),'HorizontalAlignment','left','Color','r','VerticalAl
 text(90,-0.15,num2str(varLimits),...
     'HorizontalAlignment','left','VerticalAlignment','top',...
     'Color','g');
-text(5,0.2,horzcat('Weights: ',num2str(weights)));
-text(5,0.1,horzcat('Rec wgs: ',num2str(recWeights)));
 hold off;
 
 ylim ([-1.1 0.1]);
@@ -149,7 +147,7 @@ output.experiment.tau = tauExp;
 %%%%%%%%%%%%%%%%%%%% Calculate and draw the intensity response curves 
 xx = linspace(0,9,100);
 
-s(3) = axes ('OuterPosition', [0 0 1 0.3]);
+s(3) = axes ('OuterPosition', [0 0 1 0.4]);
 set(gca,'XTick',stimAmp(:,2));
 
 hold on;
