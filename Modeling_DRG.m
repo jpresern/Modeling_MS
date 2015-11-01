@@ -5,8 +5,11 @@
 %%% Function fits HH equations on mechanically activated currents in
 %%% various neurons
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%   Included data set was obtained by digitizing the figures, published 
+%   in Hao & Delmas, 2010.
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %
-% 1.One starts the function with entering "Modeling_DRG('DRG')" at the command window
+% 0.One starts the function with entering "Modeling_DRG('DRG')" at the command window
 %   workspace MUST be set to folder containing Modeling_DRG.m
 % 1.Folder containing script must contain experimental subfolder (in this 
 %   example case 'DRG') in which the two files reside (see example):
