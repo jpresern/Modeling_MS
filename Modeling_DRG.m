@@ -276,7 +276,7 @@ fit_var = var.fit_var;
 %%%%%%%%%%%%%%%%%%%%% END prepare parameters loaded from file %%%%%%%%%%
 
 
-%% %%%%%%%%%%%%%%%%%%% START Prepare data for cost functions %%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%% START Prepare data for cost functions %%%%%%%%%%%%%%
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% Cost function C1 %%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
@@ -332,9 +332,9 @@ tiktak = toc
 
 % matlabpool close    % Closes multiple matlab instances
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END Run fitting %%%%%%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% END Run fitting %%%%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% %%%%%%%%%%%%%%%%%%%%%%%%%%% START Save results & plot graphs %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+%% %%%%%%%%%%%%%%%%%%%%%%%%%%% START Save results & plot graphs %%%%%%%%%%%
 
 FittedVariables = xout;
 FittedVariables_names = var.fit_var_name;
@@ -571,8 +571,7 @@ Modeling_DRG_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
             C(4) = cost(1); C(5) = cost(2); C(6) = cost(3);
             output.InactAdapt = out;
         end;
-        
- 
+  
 %%% Penalization for activation and inactivation %%%%%%%%%%%%%%%%%%%%%%%%%%
         
         %    C8 penalize if h0 goes above 0.1 at x = 0
@@ -602,7 +601,7 @@ Modeling_DRG_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
     end
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%% END Fitting results %%%%%%%%%%%%%%%%%%%%%%%%%
 
-%% %%% Additional functions for evaluation COST
+%%% Additional functions for evaluation COST %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     function z = h0(Hh,Xh)
         
         z = 1./(1 + exp(-Hh*(0 - Xh)));
