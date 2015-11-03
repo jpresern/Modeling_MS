@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %   Function draws the inactivated fraction in responses to desensitization 
-%   with a prepulse (like Hao & Delmas, Fig 2A). 
+%   with a prepulse 
 
 %   Function requires:
 %       dt..                sampling rate
@@ -25,7 +25,7 @@
 %       output.model.I ..   time course of current(amplitude) model
 %                           response
 %       output.experiment.x50k50 .. mid point and slope of experimentally 
-%                           obtained I-R curve for inactivation (Hao Fig2)
+%                           obtained I-R curve for inactivation
 %       output.model.x50k50.mid point and slope for model generated I-R
 %                           curve for inactivation
 %       output.model.peakPoke .. model peak current of the prepulse
@@ -37,7 +37,7 @@ function [f, output] = Draw_InactFract(dt, stimAmp, stimTime,...
 
 f = figure;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the stimulus %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the stimulus %%%%%%%%%%%%%%%%
 s(1) = axes('OuterPosition', [0 0.8 1 0.2]);
 set(gca,'XTickLabel',[]);
 
@@ -59,7 +59,7 @@ output.stimulus.t=x;
 output.stimulus.amp=y;
 output.stimulus.defAmp = stimAmp(:,2);
 
-%%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the responses %%%%%%%%%%%%%%%%%%%%%%    
+%%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the responses %%%%%%%%%%%%%%%
 s(2) = axes('OuterPosition', [0 0.35 1 0.4]); 
 
 hold on;
@@ -94,7 +94,7 @@ xlabel('t [ms]');
 ylabel('I/I_{max}');
 grid on;
 
-%%%%%%%%%%%%%%%%%%%% Calculate and draw the intensity response curves 
+%%%%%%%%%%%%%%%%%%%% Calculate and draw the intensity response curves %%%%%
 s(3) = axes ('OuterPosition', [0 0 1 0.3]); 
 
 step = [0.1:0.1:9];

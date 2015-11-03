@@ -3,26 +3,25 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Function computes the effect of conditioning adaptation strength,
 %   inactivation and time constants of inactivation and adaptation. The
-%   obtained calculation are then compared to the published results (Hao
-%   2010, Fig 3).
+%   obtained calculation are then compared to the experimental results.
+
 %   Function requires:
 %       model   ..        model type
 %       stimulus      ..  stimulus - structure containing 3D matrix with 
 %                           stim times & stimulus amplitudes
 %       varr        ..     variable values as inserted by fminsearch
 %       varr_names      ..names of variables
-%       control_amps ...  amplitude from control stimulus ExpData.Fig3A....
-%       control_pks ..    peaks from the ExpData.Fig3A.modeled.iMax
-%       tauFig3GH   ..    taus from Hao 3GH imported from experimental data
-%       Fig3I       ..    contributions of adaptation and activation (Hao
+%       control_amps ...  stim amplitude from control stimulus in basic I-R
+%       control_pks ..    peaks from the basic I-R
+%       tauInactAdapt   ..taus from Hao 3GH imported from experimental data
+%       InactAdapt       ..    contributions of adaptation and activation (Hao
 %                           fig 3I)
 %       cw1, cw2, cw3 ..  cost weights for each of the three modeled
-%                         experiments (Hao Fig 3: GH, I inact and I adapt)
-%       Fig3I_PW ..       point weights for fitting the figure (Hao 3I)
+%                         experiments: tauInact/tauAdapt, Inact, Adapt
+%       InactAdapt_PW ..       point weights for fitting the figure
 
 %   Function outputs:
 %       cost          ... computed costs
-%       out.Fig3A.iMax ...control peak currents
 %       out.peakInitial...peak elicited by conditioning
 %       out.peakRecovery..peak elicited by test
 %       out.x50..         adaptation shift midpoints (Boltzmann)
@@ -39,8 +38,8 @@
 function [out, varargout] = computeInactAdapt (model,stimulus,...
                                 varr,varr_names,dt,...
                                 control_pks,control_amps,...
-                                tauFig3GH, Fig3I,...
-                                cw1,cw2,cw3,Fig3I_PW)
+                                tauInactAdapt, InactAdapt,...
+                                cw1,cw2,cw3,InactAdapt_PW)
                             
 %   some definitions
 delayy = [4.0, 20.0, 40.0, 100.0, 400.0, 1000.0];
@@ -53,12 +52,12 @@ ff = @Boltzmann;
 x50_cont = par(1);
 k50_cont = par(2);
 
-respReduction_measured = Fig3I(:,3);
-adaptShift_measured = Fig3I(:,3);
+respReduction_measured = InactAdapt(:,3);
+adaptShift_measured = InactAdapt(:,3);
 
-tauFig3GH = reshape(tauFig3GH(:,2:3),1,8);
-wFig3I_adapt = Fig3I_PW (:,2);
-wFig3I_inact = Fig3I_PW (:,1);
+tauInactAdapt = reshape(tauInactAdapt(:,2:3),1,8);
+w_adapt = InactAdapt_PW (:,2);
+w_inact = InactAdapt_PW (:,1);
 
 %%%%%%%%%%%%% calculating the model responses
 
@@ -153,7 +152,7 @@ parfor l = 1:size(normal,3)
     k50(l,:) = k50_temp;
 end
 
-%%%%%%%%%%% preparing Hao 3G: computation of Tau activation and adaptive
+%%%%%%%%%%% computation of Tau activation and adaptive
 %%%%%%%%%%% shift
 
 %   inserting the control 
@@ -184,7 +183,7 @@ tauAct(1) = NaN;
 adaptShift = mean(x50offset(:,4:end),2);
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% preparing data Hao Fig 3H and inactviated
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% preparing inactivated
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%% fraction/channel availability
 
 
@@ -193,7 +192,7 @@ adaptShift = mean(x50offset(:,4:end),2);
 satCur = peakRecovery(13,:,:);
 satCur = reshape (satCur,[6, size(peakRecovery,3)])';
 
-%   inserting max current from control (Fig 3A)
+%   inserting max current from control (Fig basic I-R)
 satCur = horzcat(repmat(control_pks(13),size (satCur,1),1),satCur);
 maxSatCur = max(satCur,[],2);
 
@@ -232,9 +231,9 @@ respReduction = 1 - chanAvailability;
 
 
 if cw1 ~= 0
-    c1 = sum((tauFig3GH/length(tauFig3GH)).*...
-        ([tauAct(6:9),tauInact(6:9)] - tauFig3GH)).^2./...
-        abs(mean([tauAct(6:9),tauInact(6:9)])*length(tauFig3GH));
+    c1 = sum((tauInactAdapt/length(tauInactAdapt)).*...
+        ([tauAct(6:9),tauInact(6:9)] - tauInactAdapt)).^2./...
+        abs(mean([tauAct(6:9),tauInact(6:9)])*length(tauInactAdapt));
 
 else
     c1 = 0;
@@ -242,7 +241,7 @@ end;
 
 %   fiting 3I adaptation
 if cw2 ~= 0
-    c2 = sum((wFig3I_adapt/length(wFig3I_adapt)).*...
+    c2 = sum((w_adapt/length(w_adapt)).*...
         (adaptShift - adaptShift_measured)).^2./...
         abs(mean(adaptShift_measured)*length(adaptShift));
 else
@@ -251,7 +250,7 @@ end;
 
 %   fiting 3I inactivation
 if cw3 ~= 0
-    c3 = sum((wFig3I_inact/length(wFig3I_inact)).*...
+    c3 = sum((w_inact/length(w_inact)).*...
         (respReduction - respReduction_measured)).^2./...
         abs(mean(respReduction_measured)*length(respReduction));
 else
@@ -261,7 +260,6 @@ end;
 %%%%%% output section
 
 cost = [c1, c2, c3];
-% out.Fig3A.iMax = control_pks;
 out.peakInitial = peakInitial;
 out.peakRecovery = peakRecovery;
 out.x50 = x50;

@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Function computes the main stimulus (poke-and-repoke with various delay).
 %   It compares the model response to the published experiment traces. At the same time it
-%   also compares the I-R curve of the model to the published one.
+%   also compares the I-R curve of the model to experimental data.
 
 %   Function requires:
 %       model   ..        model type
@@ -15,7 +15,7 @@
 %       variables_names ..names of variables
 %       peaksMeasured_recovery .. experimentally measured recovery peaks
 %       cw1...cw2..       cost weights
-%       wFig6E ..         weights for individual point in the
+%       wRecovery ..         weights for individual point in the
 %                           instensity/response curve
 
 %   Function outputs:
@@ -27,14 +27,14 @@ function [out,varargout] = computeRecovery (model,tT,ampT,ProtocolIndex,...
                                 variables,variables_names,dt,...
                                 peaksMeasured_recovery,...
                                  cw1,cw2,...
-                                 wFig6E)
+                                 wRecovery)
 
 peakRecovery = nan(1, length(ProtocolIndex));                             
 r3 = zeros(1, length(ProtocolIndex));                            
 c1 = 0;
 c2 = 0;
 
-%%% Fitting the figure 6 - trapezoid stimuli with recovery
+%%% Fitting the recovery from inactivation - trapezoid stimuli with recovery
 % for ww = 1:length(ProtocolIndex)            
 parfor ww = 1:length(ProtocolIndex)
     
@@ -57,7 +57,7 @@ c1 = nanmean(r3);
 %%%%%%%%%%% C3 compare recovery curves %%%%%%%%%%%%%%%%%
 %%%         compares the measured peaks against the model
 if cw2 ~=0
-    c2 = sum((wFig6E(ProtocolIndex)/length(wFig6E(ProtocolIndex))).*...
+    c2 = sum((wRecovery(ProtocolIndex)/length(wRecovery(ProtocolIndex))).*...
     (peakRecovery - peaksMeasured_recovery(ProtocolIndex)).^2)./...
     abs((mean(peaksMeasured_recovery(ProtocolIndex)))*length(peakRecovery));
 end;

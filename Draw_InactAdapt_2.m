@@ -3,15 +3,15 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %   Function draws I-R curves of the desensitization tests for multiple 
-%   conditioning amplitudes (Hao Fig3). At the same time plots
+%   conditioning amplitudes. At the same time plots
 %   how to and computes the time constants.
 
 %   Function requires:
 %       exp3GHIInactAdapt.. published time constants of inactivation and
-%                           adaptation (Hao 2010, Fig 3)
+%                           adaptation
 
 %       exp3IInactAdapt ..  published contributions of adaptation and
-%                           inactivation (Hao 2010, Fig 3I)
+%                           inactivation
 %       tauAct  ..          time constant of adaptation obtained from model
 %       tauInact ..         time constant of inactivation from model
 %       adaptShift ..       adaptive shift from the model
@@ -22,10 +22,10 @@
 %       f             ..    figure handle
 %   output.model.paramInactExp.. mid point and slope for Boltzmann fit of
 %                                published experimental contribution of
-%                                inactivation (Hao 2010, Fig3I)
+%                                inactivation 
 %   output.model.paramAdaptExp ..mid point and slope for Boltzmann fit of
 %                                published experimental contribution of
-%                                adaptation (Hao 2010, Fig3I)
+%                                adaptation 
 %   output.model.paramInact ..   mid point and slope for Boltzmann fit of
 %                                contribution of inactivation from the model
 %   output.model.paramAdapt ..   mid point and slope for Boltzmann fit of

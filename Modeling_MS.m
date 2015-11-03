@@ -471,15 +471,15 @@ Modeling_MS_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
             CW9 = InitialFitParam.C_Weights(9);
             CW10 = InitialFitParam.C_Weights(10);
             
-            wFig3 = InitialFitParam.C1.RecordingWeights;
-            wFig3A = InitialFitParam.C2.PointWeights;
+            wBasicIR = InitialFitParam.C1.RecordingWeights;
+            wBasicIR_p = InitialFitParam.C2.PointWeights;
             
             [out,cost] = computeBasicIR (model,tT,ampT,ProtocolIndex1,...
                                cost1Rec_amp,cost1Cost_amp, cost1Rec_t,...
                                 variables,variables_names,dt,...
                                 peaksMeasured,...
                                  CW1,CW7,CW9,CW2,CW10,...
-                                 wFig3,wFig3A);
+                                 wBasicIR,wBasicIR_p);
             C(1) = cost(1); C(2) = cost(2); C(7) = cost(3); C(9) = cost(4); C(10) = cost(5);
             output.BasicIR = out;
         end;
@@ -501,14 +501,14 @@ Modeling_MS_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
             
             CW3 = InitialFitParam.C_Weights(3);
             CW12 = InitialFitParam.C_Weights(12);
-            wFig6E = InitialFitParam.C3.PointWeights;
+            wRecovery = InitialFitParam.C3.PointWeights;
             
             [out,cost] = computeRecovery (model,tT,ampT,ProtocolIndex3,...
                                cost3Rec_amp,cost3Cost_amp, ...
                                 variables,variables_names,dt,...
                                  peaksMeasured_recovery,...
                                  CW3,CW12,...
-                                 wFig6E);
+                                 wRecovery);
             
             C(3) = cost(1); C(12) = cost(2);
             output.Recovery = out;
@@ -528,13 +528,13 @@ Modeling_MS_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
             tT = Cost14_Stimulus.stim_t(ProtocolIndex14,:);
             ampT = Cost14_Stimulus.stim_amp(ProtocolIndex14,:);
             peaksMeasured_rePoke = ExpData.InactFract_IR.y'./max(ExpData.InactFract_IR.y);
-            wFig2 = InitialFitParam.C14.PointWeights;
+            wInactFract = InitialFitParam.C14.PointWeights;
             
             
             [out,cost] = computeInactFract (model,tT,ampT,ProtocolIndex14,...
                              variables,variables_names,dt,...
                               peaksMeasured_rePoke,...
-                              wFig2);
+                              wInactFract);
             
             C(14) = cost(1);
             output.InactFract = out;
@@ -558,7 +558,7 @@ Modeling_MS_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
             
             InactAdapt = ExpData.InactAdapt_InactAdapt.InactAdapt;
             InactAdapt_PW = ExpData.InactAdapt_InactAdapt.PW_inact_adapt;
-            tauFig3GH = ExpData.InactAdapt_Tau;
+            tauInactAdapt = ExpData.InactAdapt_Tau;
             
             CW4 = InitialFitParam.C_Weights(4);
             CW5 = InitialFitParam.C_Weights(5);
@@ -568,7 +568,7 @@ Modeling_MS_Report(Project,horzcat(Project,'_Results_',num2str(MaxInd+1)));
             [out, cost] = computeInactAdapt (model,stimulus,...
                                 variables,variables_names,dt,...
                                 control_pks,control_amps,...
-                                tauFig3GH, InactAdapt,...
+                                tauInactAdapt, InactAdapt,...
                                 CW4,CW5,CW6,InactAdapt_PW);
         
             C(4) = cost(1); C(5) = cost(2); C(6) = cost(3);

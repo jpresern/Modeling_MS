@@ -2,7 +2,6 @@
 %   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Function draws dependency of the currents to the stimulus velocity.
-%   (like Hao & Delmas, Fig8C). 
 
 %   Function requires:
 %       dt..                sampling rate

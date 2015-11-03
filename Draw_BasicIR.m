@@ -2,16 +2,14 @@
 %   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Function draws the responses to the ramp-and-hold stimulus and I-R
-%   curve (like Hao & Delmas, 2010, Fig1A, 3A). 
+%   curve
 
 %   Function requires:
 %       dt..                sampling rate
 %       stimamp..           stimulus description (amplitudes changes)
 %       stimTime..          stimulus description (time durations of amplitude changes
 %       expAmp ..           experimentally obtained current traces
-%                           (published by Hao 2010)
-%       expTime ..          time line of the experiment (published by Hao
-%                           2010)
+%       expTime ..          time line of the experiment
 %       var  ..             fitted variables and constants
 %       varInitial ..       initial values of variables and constants
 %       varLims ..          parameter limits (low & high) determining
@@ -41,7 +39,7 @@
 %       output.experiment.Imax..experimentally obtained current peaks
 %       output.experiment.tau .. time constant of decay of the maximum response
 %       output.experiment.x50k50 .. mid point and slope of experimentally 
-%                           obtained I-R curve for inactivation (Hao Fig2)
+%                                       obtained I-R curve
 
 
 function [fig, output] = Draw_BasicIR(dt, stimAmp, stimTime, expAmp, expTime, var,...
@@ -50,7 +48,7 @@ function [fig, output] = Draw_BasicIR(dt, stimAmp, stimTime, expAmp, expTime, va
 
 fig = figure;
 
-%%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the stimulus %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the stimulus %%%%%%%%%%%%%%%%
 s(1) = axes('OuterPosition', [0 0.8 1 0.2]);  
 set(gca,'XTickLabel',[]);
 
@@ -73,7 +71,7 @@ output.stimulus.amp=y;
 output.stimulus.ampMax=max(y,[],2);
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the responses %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the responses %%%%%%%%%%%%%%%
 s(2) = axes('OuterPosition', [0 0.35 1 0.45]); 
 
 hold on;
@@ -119,32 +117,32 @@ legend([p1,p2],'model','experiment','Location','southeast');
 output.results = results;
 
 %%%%%%%%%%%%%%%%%%%% Calculate and draw tau decay model and tau decay experiment
-opt = optimset('MaxFunEval',10000);
+% opt = optimset('MaxFunEval',10000);
+% 
+% %   the Experiment
+% [tauExp,~,~,~] = fminsearch(@expDec,3,opt,expTime{13}(1,1:end-(30+ixFig3Exp(a))),-expAmp{13}(1,1+30+ixFig3Exp(a):end));
+% fitExp = (1-exp(-expTime{13}(1,1:end-(30+ixFig3Exp(a)))./tauExp))-1;
+% hold on;
+% p7 = plot(expTime{13}(1,1+30+ixFig3Exp(a):end), fitExp,'Color',cmap1(14,:),'LineWidth',1.5);
+% hold off;
+% text(25,-0.9,horzcat('\tau_{fall} = ',num2str(tauExp)),'Color',cmap1(14,:));
+% 
+% %   the Model
+% [tauMod,~,~,~] = fminsearch(@expDec,3,opt,res.t(1,1:end-(280+ixFig3)),-res.g(1,1+280+ixFig3:end));
+% fitMod = (1-exp(-res.t(1,1:end-(280+ixFig3))./tauMod))-1;
+% hold on;
+% p8 = plot(res.t(1,1+280+ixFig3:end), fitMod,'r-','LineWidth',1.5);
+% hold off;
+% text(25,-0.7,horzcat('\tau_{fall} = ',num2str(tauMod)),'Color','r');
+% 
+% grid on;
+% xlabel('time [ms]');
+% ylabel('Stim_{50} (\mum)');
+% 
+% output.model.tau = tauMod;
+% output.experiment.tau = tauExp;
 
-%   the Experiment
-[tauExp,~,~,~] = fminsearch(@expDec,3,opt,expTime{13}(1,1:end-(30+ixFig3Exp(a))),-expAmp{13}(1,1+30+ixFig3Exp(a):end));
-fitExp = (1-exp(-expTime{13}(1,1:end-(30+ixFig3Exp(a)))./tauExp))-1;
-hold on;
-p7 = plot(expTime{13}(1,1+30+ixFig3Exp(a):end), fitExp,'Color',cmap1(14,:),'LineWidth',1.5);
-hold off;
-text(25,-0.9,horzcat('\tau_{fall} = ',num2str(tauExp)),'Color',cmap1(14,:));
-
-%   the Model
-[tauMod,~,~,~] = fminsearch(@expDec,3,opt,res.t(1,1:end-(280+ixFig3)),-res.g(1,1+280+ixFig3:end));
-fitMod = (1-exp(-res.t(1,1:end-(280+ixFig3))./tauMod))-1;
-hold on;
-p8 = plot(res.t(1,1+280+ixFig3:end), fitMod,'r-','LineWidth',1.5);
-hold off;
-text(25,-0.7,horzcat('\tau_{fall} = ',num2str(tauMod)),'Color','r');
-
-grid on;
-xlabel('time [ms]');
-ylabel('Stim_{50} (\mum)');
-
-output.model.tau = tauMod;
-output.experiment.tau = tauExp;
-
-%%%%%%%%%%%%%%%%%%%% Calculate and draw the intensity response curves 
+%%%%%%%%%%%%%%%%%%%% Calculate and draw the intensity response curves %%%%%
 xx = linspace(0,9,100);
 
 s(3) = axes ('OuterPosition', [0 0 1 0.4]);

@@ -3,7 +3,6 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %   Function draws the recovery from desensitization
-%   (like Hao and Demas, 2010 Fig6D, supp fig 1D.). 
 
 %   Function requires:
 %       dt..                sampling rate
@@ -27,7 +26,7 @@ function [f, output] = Draw_Recovery (dt, stimAmp, stimTime,...
 
 f = figure; 
 
-%%%%%%%%%%%%%%%%%%%%% Draw the stimulus
+%%%%%%%%%%%%%%%%%%%%% Draw the stimulus %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 s(1) = axes('OuterPosition', [0 0.8 1 0.2]);  
 set(gca,'XTickLabel',[]);
 [x,y] = Modeling_GenerateStimulus([0:dt:max(sum(stimTime,2))],...
@@ -44,7 +43,7 @@ title(horzcat(fn,': ','Recovery of MS channels from inactivation'),'interpreter'
 grid on;
 xlim([0 120]);
 
-%%%%%%%%%%%%%%%%%%% Draw the model responses %%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%% Draw the model responses %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 s(2) = axes('OuterPosition', [0 0.3 1 0.5]);
 peakInitial = nan(1,8);
 peakRecovery = peakInitial;
@@ -78,7 +77,7 @@ grid on;
 
 ss{length(f)} = s; s = [];
 
-%%%%%%% draw intensity/response curve Hao 2010, Fig 6E %%%%%%%%%
+%%%%%%% draw intensity/response curve %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 s(3) = axes('OuterPosition', [0 0 1 0.3]);
 

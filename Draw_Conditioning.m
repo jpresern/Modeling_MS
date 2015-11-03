@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %   Function draws the responses to the desensitization tests
-%   for a selected conditioning amplitude (like Hao & Delmas, 2010, Fig3BCD). 
+%   for a selected conditioning amplitude 
 
 %   Function requires:
 %       dt..                sampling rate
@@ -63,7 +63,7 @@ grid on;
 title(horzcat(fn,': ','Desensitization of MS neuron using two-step paradigm'),'interpreter','none');
 
 
-%%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the responses %%%%%%%%%%%%%%%%%%%%%%
+%%%%%%%%%%%%%%%%%%%%%%%%%% Calculate and draw the responses %%%%%%%%%%%%%%%
 s(2) = axes ('OuterPosition', [0 0.4 1 0.4]);
 
 %   prepares the variables for the both the conditioning stimulus peak and
@@ -142,7 +142,7 @@ grid on;
 hold off;
 
 
-%%%%%%%%%% drawing intensity - response - no normalizaiton %%%%%%%%%
+%%%%%%%%%% drawing intensity - response - no normalizaiton %%%%%%%%%%%%%%%%
 
 s(3) = axes ('OuterPosition', [0 0 0.5 0.3]);
 
@@ -174,7 +174,7 @@ grid on;
 ylim ([0 1.01]);
 xlim ([0 9]);
 
-%%%%%%%%%%% Drawing intensity - response after normalization %%%%%%%%%%%
+%%%%%%%%%%% Drawing intensity - response after normalization %%%%%%%%%%%%%%
 s(4) = axes ('OuterPosition', [0.5 0.0 0.5 0.3]);
 
 for l = 5

@@ -2,7 +2,7 @@
 %   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 %   Function computes the desensitization with a prepulse and compares the
-%   I-R curve with the one published by Hao2010, fig 2.
+%   I-R curve with the experimental data.
 %   Function requires:
 %       model   ..        model type
 %       tT      ..        stimulus time
@@ -11,7 +11,7 @@
 %       variables  ..     variable values as inserted by fminsearch
 %       variables_names ..names of variables
 %       peaksMeasured_rePoke .. experimentally measured recovery peaks
-%       wFig2   ..        point weights
+%       wInactFract   ..        point weights
 
 %   Function outputs:
 %       outputs.peakRePoke..  maximum current g at various stimuli amplitudes
@@ -20,14 +20,14 @@
 function [out,varargout] = computeInactFract (model,tT,ampT,ProtocolIndex,...
                                 variables,variables_names,dt,...
                                 peaksMeasured_rePoke,...
-                                wFig2)
+                                wInactFract)
 
 
 %   Preparing variables for parfor loop (slicing et al.)
 peaksPredicted = nan(size(ProtocolIndex));
 peaksPredicted_rePoke = nan(size(ProtocolIndex));
             
-%%% Fitting the figure 2A - trapezoid stimuli in poke - repoke fashion
+%%% Fitting the inactivated fraction 
 
 % for w14 = 1:length(ProtocolIndex)    
 parfor w14 = 1:length(ProtocolIndex)
@@ -45,7 +45,7 @@ end;
 %%%         compares the measured peaks against the model
 
 peaksRepoke = peaksPredicted_rePoke./min(peaksPredicted_rePoke);
-c1 = sum((wFig2(ProtocolIndex)/length(wFig2(ProtocolIndex))).*...
+c1 = sum((wInactFract(ProtocolIndex)/length(wInactFract(ProtocolIndex))).*...
     (peaksRepoke - peaksMeasured_rePoke(ProtocolIndex)).^2)./...                       
     abs((mean(peaksMeasured_rePoke(ProtocolIndex)))*length(peaksPredicted)); 
 

@@ -3,7 +3,7 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %   Function draws I-R curves of the desensitization tests for multiple 
-%   conditioning amplitudes (Hao Fig3). At the same time plots
+%   conditioning amplitudes. At the same time plots
 %   how to and computes the time constants.
 
 %   Function requires:
@@ -25,7 +25,7 @@ function [f, output] = Draw_InactAdapt_1(stimAmp,peakRecovery,...
                                 x50k50,...
                                 cmap1, cmap2, marmap)
 
-%%%%%%%%%%%%%%%% Drawing Boltzmann fit for I-R curves from conditioning
+%%%%%%%%%%%%%%%% Drawing Boltzmann fit for I-R curves from conditioning %%%
 f = figure;
 
 %   conditioning amplitudes
@@ -102,12 +102,13 @@ for aa = 1:size(stimAmp,2)
     set(gca,'XTickLabel', conAmp);
 end;
 
-%%%%%%%%%%%%%  Drawing adaptive shift fits: Draws the x50 (um) amplitudes against conditioning time (ms)
+%%%%%%%%%%%%%  Drawing adaptive shift fits: Draws the x50 (um) amplitudes %
+%%%%%%%%%%%%%  against conditioning time (ms) %%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 
 %   calculate mean values for each conditioning time
 %   calculation does not include first line (no slope) and last three lines
 
-%   inserting x50 from control (fig 3A)
+%   inserting x50 from control
 x50 = horzcat(repmat(x50k50(1),size(stimAmp,2),1),x50);
 x50(x50<0) = nan;
 
@@ -147,7 +148,7 @@ tauAct(1) = nan;
 satCur = peakRecovery(size(peakRecovery,1),:,:);
 satCur = reshape (satCur,[6, size(peakRecovery,3)])';
 
-%   inserting control current for 9th stimulus amplitude (Fig 3A)
+%   inserting control current for 9th stimulus amplitude
 satCur = horzcat(repmat(Imax(13),size (satCur,1),1),satCur);
 maxSatCur = max(satCur,[],2);
 

@@ -15,21 +15,21 @@
 %       variables_names ..names of variables
 %       peaksMeasured   ..peaks measured experimentally
 %       cw1...cw5..       cost weights
-%       wFig3  ..         weights for individual trace
-%       wFig3A ..         weights for individual point in the
+%       wT  ..         weights for individual trace
+%       wP ..         weights for individual point in the
 %                           instensity/response curve
 
 %   Function outputs:
-%       outputs.Fig3A.model.iMax..  maximum current g at various stimuli amplitudes
-%       outputs.Fig3A.model.amp ..  amplitude used to get iMax
-%       outputs.c1,.c2,.c3...       computed costs
+%       output.basicIR.model.iMax..  maximum current g at various stimuli amplitudes
+%       output.basicIR.model.amp ..  amplitude used to get iMax
+%       output.c1,.c2,.c3...       computed costs
 
 function [out,varargout] = computeBasicIR (model,tT,ampT,ProtocolIndex,...
                                cost1Rec_amp,cost1Cost_amp, cost1Rec_t,...
                                 variables,variables_names,dt,...
                                 peaksMeasured,...
                                  cw1,cw2,cw3,cw4,cw5,...
-                                 wFig3,wFig3A)
+                                 wT,wP)
 
 %   variable prealocation
 iMax = nan(1,length(ProtocolIndex));
@@ -57,7 +57,7 @@ parfor w = 1:length(ProtocolIndex)
         e2(isinf(e2)) = NaN;                                           
         r(w) = nansum(e2)/(length(e2)-sum(isnan(e2))); 
     end
-    %%%%%%%%%%%%% C7 restrict current traces from Fig3A to approach 0 mV in steady-state %%%%%%%%%%%%%%%%
+    %%%%%%%%%%%%% C7 restrict current traces from basic I-R to approach 0 mV in steady-state %%%%%%%%%%%%%%%%
     if cw3 ~= 0
         indS = dsearchn(cost1Rec_t(w,:)',70);
         if g(indS) < -0.05
@@ -65,7 +65,7 @@ parfor w = 1:length(ProtocolIndex)
         end;
     end;
 
-    %%%%%%%%%%% C9 keep current traces before the stimulus in Fig3A above 0.02 %%%%%%%%%%%%
+    %%%%%%%%%%% C9 keep current traces before the stimulus in basic I-R above 0.02 %%%%%%%%%%%%
     if cw4 ~= 0
         indSS = dsearchn(cost1Rec_t(w,:)',18);
         if g(indSS) > -0.01
@@ -74,15 +74,16 @@ parfor w = 1:length(ProtocolIndex)
     end;
 end;
             
-c1 = nanmean(r.*wFig3(1:length(r)));   % calculates penalties over all recordings
+c1 = nanmean(r.*wT(1:length(r)));   % calculates penalties over all recordings
 c3 = nanmean(cS);
 c4 = nanmean(cSS);
 
-%%% Fitting the Hao Figure 3A (control) - peaks only
+
 %%%%%%%%%%%%%%%% C2 compare onset response curves %%%%%%%%%%%%%%%%%%%%%%%%
-%%% comparing current peaks from the model as produced by protocol from Fig3A
+%%% comparing current peaks from the model as produced by protocol from
+%%% basic I-R
 if cw2 ~= 0
-    c2 = sum((wFig3A(ProtocolIndex)/length(wFig3A(ProtocolIndex))).*...% preparing the weights for the estimator C2
+    c2 = sum((wP(ProtocolIndex)/length(wP(ProtocolIndex))).*...% preparing the weights for the estimator C2
         (iMax - peaksMeasured(ProtocolIndex)).^2)./...               % subtracting modeled and recorded peaks
         abs((mean(peaksMeasured(ProtocolIndex)))*length(iMax));       % ?normalizing?
 end;
