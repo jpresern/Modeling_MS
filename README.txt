@@ -1,11 +1,14 @@
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
-   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2015
+   Janez Presern, Ales Skorjanc, Tomaz Rodic, Jan Benda 2011-2016
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
     CC Attribution-NonCommercial-ShareAlike 4.0 International 
 
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % Function fits HH equations on mechanically activated currents in
-% various neurons.
+% various neurons. The model use and purpose are described in the paper,
+% published in Biological Cybernetics:
+% Prešern, J., Škorjanc, A., Rodič, T., Benda, J. Biol Cybern (2016). 
+% doi:10.1007/s00422-016-0693-7
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
    
    Requirements
